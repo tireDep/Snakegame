@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 479967032}
   - component: {fileID: 479967034}
   - component: {fileID: 479967033}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: WallTileMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -702,6 +702,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0554b8c344a581349a6be1104b1e65f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardManager
+  width: 10
+  height: 20
+  floorTilemap: {fileID: 1498474551}
+  wallTilemap: {fileID: 479967034}
+  floorTiles:
+  - {fileID: 11400000, guid: ec2f24ba4476bdf4b944b0a613670e7a, type: 2}
+  - {fileID: 11400000, guid: f9941629cc2f93a44b1db5a907655f87, type: 2}
+  wallTile: {fileID: 11400000, guid: e5feaf7a47198fa4ba86a663236a8d77, type: 2}
 --- !u!1 &2066505189
 GameObject:
   m_ObjectHideFlags: 0
