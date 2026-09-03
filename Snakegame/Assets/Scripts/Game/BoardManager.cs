@@ -91,4 +91,13 @@ public class BoardManager : MonoBehaviour
         Vector3Int gridPosition = new Vector3Int(position.x, position.y, 0);
         return floorTilemap.GetCellCenterWorld(gridPosition);
     }
+
+    // 보드의 중앙 좌표 계산 함수
+    public Vector3 GetBoardCenterWorld()
+    {
+        Vector3 minPosition = GridToWorld(Vector2Int.zero);
+        Vector3 maxPosition = GridToWorld(new Vector2Int(width - 1, height - 1));
+        
+        return (minPosition + maxPosition) * 0.5f;
+    }
 }
