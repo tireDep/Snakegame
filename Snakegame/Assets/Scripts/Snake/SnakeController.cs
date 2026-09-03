@@ -13,6 +13,8 @@ public class SnakeController : MonoBehaviour
     private Vector2Int currentDirection;
     private Vector2Int nextDirection;
     
+    [SerializeField] private SnakeView snakeView;
+    
     private void Start()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
@@ -27,18 +29,24 @@ public class SnakeController : MonoBehaviour
 
     public void Initialize()
     {
-        currentDirection = Vector2Int.right;
-
+        // 리소스 방향이 왼쪽이라서 왼쪽으로 진행
+        currentDirection = Vector2Int.left;
         nextDirection = currentDirection;
 
         Vector2Int startPosition = boardManager.GetCenterPosition();
-        snake.Initialize(startPosition, startingLength, currentDirection);
-        
-        // >>
-        foreach (Vector2Int position in snake.Positions)
-        {
-            Debug.Log(position);
+        if (startPosition.x + startingLength > boardManager.Width)
+        { 
+            // todo :
+            // 맵 크기 제한, 최초 시작 길이 제한 필요
+            Debug.LogError("SankeController:: Initialize:: Invalid length!");
+            return;
         }
-        // <<
+        
+        snake.Initialize(startPosition, startingLength, currentDirection);
+
+        if (snakeView != null)
+        {
+            snakeView.Refresh(snake.Positions, currentDirection);
+        }
     }
 }

@@ -18,7 +18,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private List<TileBase> floorTiles;    // 맵 타일
     [SerializeField] private TileBase wallTile;             // 벽 타일
     
-    public int Witdh => width;
+    public int Width => width;
     public int Height => height;
 
     private void Start()

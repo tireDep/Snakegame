@@ -56,7 +56,7 @@ public class BoardCamera : MonoBehaviour
     // 크기 업데이트
     private void UpdateSize()
     {
-        float boardWidth = boardManager.Witdh;
+        float boardWidth = boardManager.Width;
         float boardHeight = boardManager.Height;
 
         // 여백 추가

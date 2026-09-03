@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags: []
   layers:
   - Default
@@ -15,7 +15,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Snake
   - 
   - 
   - 
@@ -41,3 +41,21 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 1492276653
+    locked: 0
+  - name: Board
+    uniqueID: 3527712867
+    locked: 0
+  - name: Obejct
+    uniqueID: 3192411051
+    locked: 0
+  - name: Effect
+    uniqueID: 3948476839
+    locked: 0
+  - name: 
+    uniqueID: 58156779
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  m_MigratedRenderPipelines: []

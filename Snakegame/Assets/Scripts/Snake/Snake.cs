@@ -25,15 +25,6 @@ public class Snake
         for(int index = 0; index < length; index++)
         {
             Vector2Int addPosition = startPosition - direction * index;
-            if (addPosition.x < 0 || addPosition.y < 0)
-            {
-                // todo :
-                // 맵 크기 제한, 최초 시작 길이 제한 필요
-                Debug.LogError("Sanke:: Initialize:: Invalid length!");
-                positions.Clear();
-                return false;
-            }
-            
             positions.Add(addPosition);
         }
         
