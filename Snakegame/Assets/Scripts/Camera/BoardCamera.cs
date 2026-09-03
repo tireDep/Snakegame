@@ -4,9 +4,9 @@ using UnityEngine.UI;
 public class BoardCamera : MonoBehaviour
 {
     [Header("Camera")]
-    [SerializeField] private RectTransform boardViewport;
-    [SerializeField] private float boardPadding = 2.0f;
-    [SerializeField] private Vector2 cameraOffset = Vector2.zero;
+    [SerializeField] private RectTransform boardViewport;               // 화면 표시 영역
+    [SerializeField] private float boardPadding = 2.0f;                 // 카메라 패딩
+    [SerializeField] private Vector2 cameraOffset = Vector2.zero;       // 카메라 오프셋
  
     BoardManager boardManager;
     private Camera targetCamera;
@@ -18,7 +18,7 @@ public class BoardCamera : MonoBehaviour
 
     private void Start()
     {
-        boardManager = Object.FindAnyObjectByType<BoardManager>();
+        boardManager = FindAnyObjectByType<BoardManager>();
         if (boardManager == null)
         {
             Debug.LogError("BoardCamera:: BoardManager not found!");
@@ -28,6 +28,7 @@ public class BoardCamera : MonoBehaviour
         UpdateCamera();
     }
 
+    // 카메라 업데이트
     public void UpdateCamera()
     {
         if (boardManager == null || targetCamera == null || boardViewport == null)
@@ -39,6 +40,7 @@ public class BoardCamera : MonoBehaviour
         UpdateSize();
     }
 
+    // 위치 업데이트
     private void UpdatePosition()
     {
         Vector3 boardCenter = boardManager.GetBoardCenterWorld();
@@ -78,6 +80,7 @@ public class BoardCamera : MonoBehaviour
         targetCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
     }
 
+    // 비율 계산 반환
     private Vector2 GetViewportWorldOffset()
     {
         Canvas canvas = boardViewport.GetComponentInParent<Canvas>();

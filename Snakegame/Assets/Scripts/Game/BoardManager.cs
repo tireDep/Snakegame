@@ -100,4 +100,9 @@ public class BoardManager : MonoBehaviour
         
         return (minPosition + maxPosition) * 0.5f;
     }
+
+    public Vector2Int GetCenterPosition()
+    {
+        return new Vector2Int(width / 2, height / 2);
+    }
 }
