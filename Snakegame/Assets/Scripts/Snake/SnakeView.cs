@@ -111,23 +111,21 @@ public class SnakeView : MonoBehaviour
     // 회전 계산 업데이트
     private void UpdateRotation(SnakeSegmentView segment, SnakeSegmentType type, int index, IReadOnlyList<Vector2Int> positions, Vector2Int headDirection)
     {
-        if (type == SnakeSegmentType.Tail)
+        if (type == SnakeSegmentType.Head)
         {
-            Vector2Int tailDirection = GetTailDirection(positions);
-            segment.SetRotation(GetRotation(tailDirection));
-            
+            segment.SetRotation(GetRotation(headDirection));
             return;
         }
-
-        segment.SetRotation(GetRotation(headDirection));
+        
+        // 자신보다 앞에 있는 세그먼트의 위치를 기준으로 방향 결정
+        Vector2Int curDirection = GetDirection(positions, index);
+        segment.SetRotation(GetRotation(curDirection));
     }
     
-    // 꼬리랑 연결된 방향 반환
-    private Vector2Int GetTailDirection(IReadOnlyList<Vector2Int> positions)
+    // 연결된 방향 반환
+    private Vector2Int GetDirection(IReadOnlyList<Vector2Int> positions, int curIndex)
     {
-        int tailIndex = positions.Count - 1;
-        
-        return positions[tailIndex - 1] - positions[tailIndex];
+        return positions[curIndex - 1] - positions[curIndex];
     }
 
     private float GetRotation(Vector2Int direction)
