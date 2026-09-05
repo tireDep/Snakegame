@@ -4,6 +4,7 @@ using UnityEngine;
 public class SnakeSegmentView : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
+    public SpriteRenderer SpriteRenderer => spriteRenderer;
     
     private void Awake()
     {

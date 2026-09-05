@@ -28,7 +28,13 @@ public class SnakeView : MonoBehaviour
             return;   
         }
 
-        tailSpriteIndex = Random.Range(0, tailSprites.Length); 
+         Initialize();
+    }
+
+    public void Initialize()
+    {
+        tailSpriteIndex = Random.Range(0, tailSprites.Length);
+        SetGameOver(false);
     }
 
     // 새로고침
@@ -338,5 +344,25 @@ public class SnakeView : MonoBehaviour
 
         Debug.LogError($"Invalid corner direction. " + $"Front: {frontDirection}, " + $"Back: {backDirection}");
         return 0.0f;
+    }
+
+    // 게임 오버 시 색상 처리
+    public void SetGameOver(bool setGameOver)
+    {
+        if (segments == null || segments.Count == 0)
+        {
+            return;
+        }
+
+        foreach (SnakeSegmentView segment in segments)
+        {
+            if (segment == null || segment.SpriteRenderer == null)
+            {
+                continue;
+            }
+            
+            // segment.SpriteRenderer.color = setGameOver ? Color.gray : Color.white;
+            segment.SpriteRenderer.color = setGameOver ? new Color(1.0f, 100.0f / 255.0f, 110.0f / 255.0f, 1.0f) : Color.white;
+        }
     }
 }

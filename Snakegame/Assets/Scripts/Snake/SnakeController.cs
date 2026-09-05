@@ -159,6 +159,7 @@ public class SnakeController : MonoBehaviour
         {
             isMoving = false;
             Debug.Log("SnakeController::Move Hit the wall!");
+            snakeView.SetGameOver(true);
 
             return;
         }
