@@ -562,6 +562,7 @@ MonoBehaviour:
   segmentPrefab: {fileID: 8400208399553600077, guid: 35118496249bc644da1406c9dd36c4e1, type: 3}
   headSprite: {fileID: 21300000, guid: 27d7e02a1aa0f4748960583ad9acf793, type: 3}
   bodySprite: {fileID: 21300000, guid: aa911a07db878dd4e959cec415587044, type: 3}
+  bodyCornerSprite: {fileID: 21300000, guid: c28d2f89315692d4f945d2cfb113bb7f, type: 3}
   tailSprites:
   - {fileID: 21300000, guid: f076513ec06d88043bb48867a6587017, type: 3}
   - {fileID: 21300000, guid: 8cc5ccee9cbdfb946a889c0e257b17be, type: 3}
@@ -895,7 +896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e093c422c78d44b4eac378bf96143f0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnakeController
-  startingLength: 2
+  startingLength: 7
   snakeView: {fileID: 872674078}
   moveInterval: 0.5
 --- !u!114 &1758939812
