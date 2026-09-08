@@ -595,8 +595,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0554b8c344a581349a6be1104b1e65f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardManager
-  width: 20
-  height: 20
+  width: 10
+  height: 10
   floorTilemap: {fileID: 1498474551}
   wallTilemap: {fileID: 479967034}
   floorTiles:
@@ -896,7 +896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e093c422c78d44b4eac378bf96143f0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnakeController
-  startingLength: 7
+  startingLength: 5
   snakeView: {fileID: 872674078}
   moveInterval: 0.5
 --- !u!114 &1758939812

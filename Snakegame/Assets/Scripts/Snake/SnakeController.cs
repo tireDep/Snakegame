@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -159,18 +160,57 @@ public class SnakeController : MonoBehaviour
         {
             isMoving = false;
             Debug.Log("SnakeController::Move Hit the wall!");
-            snakeView.SetGameOver(true);
+        }
 
+        // 자기 몸 충돌
+        bool willGrow = false;
+        if (CheckBodyCollision(newHeadPosition, willGrow))
+        {
+            isMoving = false;
+            Debug.Log("SnakeController::Move Hit the itself!");
+        }
+
+        if (!isMoving)
+        {
+            snakeView.SetGameOver(true);
             return;
         }
         
         // todo :
         // Item 구현 후 코드 작성 필요. 임시 처리
-        snake.Move(newHeadPosition, false);
+        snake.Move(newHeadPosition, willGrow);
         
         // 변경된 좌표 기반으로 위치와 회전 갱신
         snakeView.Refresh(snake.Positions, currentDirection);
         
         hasQueuedDirection = false;
+    }
+
+    private bool CheckBodyCollision(Vector2Int newHeadPosition, bool willGrow)
+    {
+        IReadOnlyList<Vector2Int> positions = snake.Positions;
+        if (positions == null || positions.Count == 0)
+        {
+            return false;
+        }
+
+        int checkCount = positions.Count;
+        
+        // 일반 이동에서는 기존 Tail이 이번 틱에서 제거
+        // 따라서 Head가 현재 Tail 위치로 돌아가는 경우는 충돌로 처리하지 않음
+        if (!willGrow)
+        {
+            --checkCount;
+        }
+
+        for (int index = 0; index < checkCount; index++)
+        {
+            if (positions[index] == newHeadPosition)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
