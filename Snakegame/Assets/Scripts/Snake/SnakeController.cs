@@ -8,6 +8,7 @@ public class SnakeController : MonoBehaviour
     [SerializeField] private int startingLength = 3;    // 초기 길이
     
     BoardManager boardManager;
+    FoodManager foodManager;
     
     private readonly Snake snake = new Snake();
     public Snake SnakePlayer => snake;
@@ -29,6 +30,13 @@ public class SnakeController : MonoBehaviour
         {
             Debug.LogError("SnakeController:: BoardManager not found!");
             return;   
+        }
+
+        foodManager = FindAnyObjectByType<FoodManager>();
+        if (foodManager == null)
+        {
+            Debug.LogError("SnakeController:: FoodManager not found!");
+            return;  
         }
         
         Initialize();
@@ -151,6 +159,8 @@ public class SnakeController : MonoBehaviour
     private void Move()
     {
         currentDirection = nextDirection;
+        hasQueuedDirection = false;
+        
         Vector2Int newHeadPosition = snake.HeadPosition + currentDirection;
         
         // todo :
@@ -163,7 +173,7 @@ public class SnakeController : MonoBehaviour
         }
 
         // 자기 몸 충돌
-        bool willGrow = false;
+        bool willGrow = foodManager.CheckFood(newHeadPosition);
         if (CheckBodyCollision(newHeadPosition, willGrow))
         {
             isMoving = false;
@@ -176,16 +186,21 @@ public class SnakeController : MonoBehaviour
             return;
         }
         
-        // todo :
-        // Item 구현 후 코드 작성 필요. 임시 처리
+        // 이동
         snake.Move(newHeadPosition, willGrow);
         
         // 변경된 좌표 기반으로 위치와 회전 갱신
         snakeView.Refresh(snake.Positions, currentDirection);
-        
-        hasQueuedDirection = false;
+
+        // 이동 후 아이템 소비, 새로운 아이템 생성
+        if (willGrow)
+        {
+            foodManager.ConsumeFood();
+            foodManager.SpawnFood();
+        }
     }
 
+    // 자기 자신 충돌 체크
     private bool CheckBodyCollision(Vector2Int newHeadPosition, bool willGrow)
     {
         IReadOnlyList<Vector2Int> positions = snake.Positions;
@@ -212,5 +227,10 @@ public class SnakeController : MonoBehaviour
         }
 
         return false;
+    }
+    
+    public bool CheckContains(Vector2Int position)
+    {
+        return snake.CheckContains(position);
     }
 }

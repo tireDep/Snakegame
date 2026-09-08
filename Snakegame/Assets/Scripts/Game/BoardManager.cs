@@ -105,4 +105,9 @@ public class BoardManager : MonoBehaviour
     {
         return new Vector2Int(width / 2, height / 2);
     }
+    
+    public Vector2Int GetRandomPosition()
+    {
+        return new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+    }
 }
