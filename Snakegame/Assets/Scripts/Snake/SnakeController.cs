@@ -216,6 +216,7 @@ public class SnakeController : MonoBehaviour
         {
             foodManager.ConsumeFood();
             foodManager.SpawnFood();
+            gameManager.AddFoodCount();
         }
     }
 

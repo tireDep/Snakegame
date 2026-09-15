@@ -11,6 +11,12 @@ public class GameManager : MonoBehaviour
     private GameState gameState;
     public GameState GameState => gameState;
 
+    private int foodCount = 0;  // 아이템 획득 횟수
+    public int FoodCount => foodCount;
+    
+    // UI 구독 함수
+    public event Action<int> OnCountChanged;
+    
     private void Start()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
@@ -71,6 +77,7 @@ public class GameManager : MonoBehaviour
         boardCamera.UpdateCamera();
         snakeController.Initialize();
         foodManager.Initialize();
+        ResetCount();
 
         gameState = GameState.Playing;
     }
@@ -84,6 +91,7 @@ public class GameManager : MonoBehaviour
 
         gameState = GameState.GameOver;
         Debug.Log("Game Over!");
+        Debug.Log("count : " + foodCount + " !");
     }
     
     public void RestartGame()
@@ -99,5 +107,18 @@ public class GameManager : MonoBehaviour
     public bool IsPlaying()
     {
         return gameState == GameState.Playing;
+    }
+
+    public void AddFoodCount()
+    {
+        foodCount++;
+        OnCountChanged?.Invoke(foodCount);
+        Debug.Log("count : " + foodCount);
+    }
+    
+    public void ResetCount()
+    {
+        foodCount = 0;
+        OnCountChanged?.Invoke(foodCount);
     }
 }
