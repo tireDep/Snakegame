@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FoodManager : MonoBehaviour
 {
@@ -49,36 +51,55 @@ public class FoodManager : MonoBehaviour
     }
 
     // 아이템 소환
-    public void SpawnFood()
+    public bool SpawnFood()
     {
-        if (boardManager == null || snakeController == null || foodView == null)
+        if (foodView == null)
         {
-            return;
+            Debug.LogError("FoodManager::SpawnFood FoodView is null.");
+            return false;
         }
-        
-        // 보드가 모두 Snake로 차 있는 경우 대비, 무한 루프되지 않도록 처리
-        int maxTryCount = boardManager.Width * boardManager.Height;
 
-        for (int index = 0; index < maxTryCount; index++)
+        List<Vector2Int> emptyPositions = GetEmptyPositions();
+
+        // 더 이상 Food를 생성할 공간이 없음
+        if (emptyPositions.Count == 0)
         {
-            Vector2Int newPosition = boardManager.GetRandomPosition();
-            
-            // 이미 차지하고 있는 위치에는 생성하지 않음
-            // todo : newPosition 가져올때 체크로 수정
-            if (snakeController.CheckContains(newPosition))
-            {
-                continue;
-            }
-            
-            foodPosition = newPosition;
-            ExistFood = true;
-            foodView.SetPosition(boardManager.GridToWorld(foodPosition));
-            foodView.SetShow(true);
-            
-            return;
+            ExistFood = false;
+            foodView.SetShow(false);
+
+            return false;
         }
         
-        Debug.LogWarning("FoodManager::SpawnFood failed. No empty cell.");
+        int randomIndex = Random.Range(0, emptyPositions.Count);
+        foodPosition = emptyPositions[randomIndex];
+        
+        ExistFood = true;
+        foodView.SetPosition(boardManager.GridToWorld(foodPosition));
+        foodView.SetShow(true);
+
+        return true;
+    }
+
+    // 빈 위치 체크 함수
+    private List<Vector2Int> GetEmptyPositions()
+    {
+        List<Vector2Int> emptyPositions = new List<Vector2Int>();
+        
+        for(int y = 0; y < boardManager.Height; y++)
+        {
+            for(int x = 0; x < boardManager.Width; x++)
+            {
+                Vector2Int position = new Vector2Int(x, y);
+                if (snakeController.CheckContains(position))
+                {
+                    continue;
+                }
+                
+                emptyPositions.Add(position);
+            }
+        }
+        
+        return emptyPositions;
     }
 
     // 아이템 체크

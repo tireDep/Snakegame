@@ -189,14 +189,14 @@ public class SnakeController : MonoBehaviour
         // 새로운 head 위치가 board 범위를 벗어나면 임시 이동 중지. 추후 게임오버로 구현 필요
         if (!boardManager.IsInBounds(newHeadPosition))
         {
-            gameManager.GameOver();
+            gameManager.OnGameOver();
         }
 
         // 자기 몸 충돌
         bool willGrow = foodManager.CheckFood(newHeadPosition);
         if (CheckBodyCollision(newHeadPosition, willGrow))
         {
-            gameManager.GameOver();
+            gameManager.OnGameOver();
         }
 
         if (!gameManager.IsPlaying())
@@ -215,8 +215,13 @@ public class SnakeController : MonoBehaviour
         if (willGrow)
         {
             foodManager.ConsumeFood();
-            foodManager.SpawnFood();
             gameManager.AddFoodCount();
+
+            // 아이템 생성에 실패 하면, 모든 공간이 뱀으로 채워진 것
+            if (!foodManager.SpawnFood())
+            {
+                gameManager.OnGameClear();
+            }
         }
     }
 

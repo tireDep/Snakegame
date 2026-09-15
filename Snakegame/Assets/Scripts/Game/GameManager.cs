@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         gameState = GameState.Playing;
     }
 
-    public void GameOver()
+    public void OnGameOver()
     {
         if (gameState != GameState.Playing)
         {
@@ -91,6 +91,18 @@ public class GameManager : MonoBehaviour
 
         gameState = GameState.GameOver;
         Debug.Log("Game Over!");
+        Debug.Log("count : " + foodCount + " !");
+    }
+
+    public void OnGameClear()
+    {
+        if (gameState != GameState.Playing)
+        {
+            return;
+        }
+
+        gameState = GameState.Clear;
+        Debug.Log("Clear!");
         Debug.Log("count : " + foodCount + " !");
     }
     
