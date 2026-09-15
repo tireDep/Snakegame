@@ -39,7 +39,7 @@ public class BoardManager : MonoBehaviour
     }
 
     // 바닥 생성 함수
-    public void GenerateFloor(int xSize, int ySize)
+    private void GenerateFloor(int xSize, int ySize)
     {
         for (int y = 0; y < ySize; y++)
         {
@@ -64,7 +64,7 @@ public class BoardManager : MonoBehaviour
     }
 
     // 벽 생성 함수
-    public void GenerateWall(int xSize, int ySize)
+    private void GenerateWall(int xSize, int ySize)
     {
         for (int x = -1; x <= xSize; x++)
         {

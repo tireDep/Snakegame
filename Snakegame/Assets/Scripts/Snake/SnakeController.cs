@@ -21,9 +21,10 @@ public class SnakeController : MonoBehaviour
     private float moveTimer;
     private bool hasQueuedDirection;     // 한 Tick 안에서 여러 번 방향이 변경되는 것 방지
     private Vector2Int nextDirection;   // 다음 이동 시점에 반영
-    private bool isMoving;
     
-    private void Start()
+    private GameManager gameManager;
+    
+    private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
         if (boardManager == null)
@@ -38,13 +39,18 @@ public class SnakeController : MonoBehaviour
             Debug.LogError("SnakeController:: FoodManager not found!");
             return;  
         }
-        
-        Initialize();
+
+        gameManager = FindAnyObjectByType<GameManager>();
+        if (gameManager == null)
+        {
+            Debug.LogError("SnakeController:: GameManager not found!");
+            return;
+        }
     }
 
     private void Update()
     {
-        if (!isMoving)
+        if (!gameManager.IsPlaying())
         {
             return;
         }
@@ -54,6 +60,11 @@ public class SnakeController : MonoBehaviour
 
     public void Initialize()
     {
+        if (boardManager == null)
+        {
+            return;
+        }
+        
         // 리소스 방향이 왼쪽이라서 왼쪽으로 진행
         currentDirection = Vector2Int.left;
         nextDirection = currentDirection;
@@ -71,16 +82,21 @@ public class SnakeController : MonoBehaviour
 
         if (snakeView != null)
         {
+            snakeView.Initialize();
             snakeView.Refresh(snake.Positions, currentDirection);
         }
         
         moveTimer = 0.0f;
         hasQueuedDirection = false;
-        isMoving = true;
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        if (gameManager == null || !gameManager.IsPlaying())
+        {
+            return;
+        }
+        
         if (!context.performed)
         {
             return;
@@ -158,6 +174,11 @@ public class SnakeController : MonoBehaviour
     // 실제 이동
     private void Move()
     {
+        if (gameManager == null || boardManager == null || foodManager == null || snakeView == null)
+        {
+            return;    
+        }
+        
         currentDirection = nextDirection;
         hasQueuedDirection = false;
         
@@ -168,19 +189,17 @@ public class SnakeController : MonoBehaviour
         // 새로운 head 위치가 board 범위를 벗어나면 임시 이동 중지. 추후 게임오버로 구현 필요
         if (!boardManager.IsInBounds(newHeadPosition))
         {
-            isMoving = false;
-            Debug.Log("SnakeController::Move Hit the wall!");
+            gameManager.GameOver();
         }
 
         // 자기 몸 충돌
         bool willGrow = foodManager.CheckFood(newHeadPosition);
         if (CheckBodyCollision(newHeadPosition, willGrow))
         {
-            isMoving = false;
-            Debug.Log("SnakeController::Move Hit the itself!");
+            gameManager.GameOver();
         }
 
-        if (!isMoving)
+        if (!gameManager.IsPlaying())
         {
             snakeView.SetGameOver(true);
             return;

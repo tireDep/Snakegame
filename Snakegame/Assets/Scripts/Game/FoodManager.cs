@@ -14,7 +14,7 @@ public class FoodManager : MonoBehaviour
     public bool ExistFood { get; private set; }
     public Vector2Int FoodPosition => foodPosition;
     
-    private void Start()
+    private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
         if (boardManager == null)
@@ -29,9 +29,11 @@ public class FoodManager : MonoBehaviour
             Debug.LogError("FoodManager:: SnakeController not found!");
             return;
         }
+    }
+
+    private void Start()
+    {
         
-        CreateFood();
-        SpawnFood();
     }
 
     private void CreateFood()
@@ -98,5 +100,21 @@ public class FoodManager : MonoBehaviour
         {
             foodView.SetShow(false);
         }
+    }
+
+    // 초기화 함수
+    public void Initialize()
+    {
+        ExistFood = false;
+        if (foodView != null)
+        {
+            foodView.SetShow(false);
+        }
+        else
+        {
+            CreateFood();    
+        }
+        
+        SpawnFood();
     }
 }

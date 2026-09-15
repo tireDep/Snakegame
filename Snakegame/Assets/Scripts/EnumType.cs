@@ -5,3 +5,11 @@ public enum SnakeSegmentType
     BodyCorner,
     Tail
 }
+
+public enum GameState
+{
+    Ready,
+    Playing,
+    GameOver,
+    Win
+}

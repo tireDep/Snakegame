@@ -18,8 +18,8 @@ public class SnakeView : MonoBehaviour
     private readonly List<SnakeSegmentView> segments = new();
     
     private Int32 tailSpriteIndex = 0;
-    
-    private void Start()
+
+    private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
         if (boardManager == null)
@@ -27,7 +27,10 @@ public class SnakeView : MonoBehaviour
             Debug.LogError("SnakeView:: BoardManager not found!");
             return;   
         }
-
+    }
+    
+    private void Start()
+    {
          Initialize();
     }
 
@@ -65,17 +68,21 @@ public class SnakeView : MonoBehaviour
     // 세그먼트 수 동기화
     private void SyncSegmentCount(int requiredCount)
     {
+        // 부족한 Segment 생성
         while (segments.Count < requiredCount)
         {
             SnakeSegmentView segment = Instantiate(segmentPrefab, transform);
             segments.Add(segment);
         }
 
+        // 남는 Segment 제거
+        // 항상 마지막 요소부터 제거합니다.
         while (segments.Count > requiredCount)
         {
             int lastIndex = segments.Count - 1;
-            Destroy(segments[lastIndex].gameObject);
+            SnakeSegmentView segment = segments[lastIndex];
             segments.RemoveAt(lastIndex);
+            Destroy(segment.gameObject);
         }
     }
     

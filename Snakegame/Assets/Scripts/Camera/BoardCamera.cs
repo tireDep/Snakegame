@@ -14,17 +14,22 @@ public class BoardCamera : MonoBehaviour
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
-    }
-
-    private void Start()
-    {
+        if (targetCamera == null)
+        {
+            Debug.LogError("BoardCamera:: Camera not found!");
+            return; 
+        }
+        
         boardManager = FindAnyObjectByType<BoardManager>();
         if (boardManager == null)
         {
             Debug.LogError("BoardCamera:: BoardManager not found!");
             return;   
         }
-        
+    }
+
+    private void Start()
+    {
         UpdateCamera();
     }
 
