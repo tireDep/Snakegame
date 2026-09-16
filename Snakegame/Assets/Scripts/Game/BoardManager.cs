@@ -20,22 +20,23 @@ public class BoardManager : MonoBehaviour
     
     public int Width => width;
     public int Height => height;
-
-    private void Start()
-    {
-        GenerateMap(width, height);
-    }
     
     // 타일맵 생성 함수
-    public void GenerateMap(int xSize = DEFAULT_MAP_SIZE, int ySize = DEFAULT_MAP_SIZE)
+    public void GenerateMap()
     {
+        if (width <= 0 || height <= 0)
+        {
+            Debug.LogError("BoardManager::GenerateMap" + "Width: {xSize}, Height: {ySize}");
+            return;
+        }
+        
         // 생성 전에 기존 생성된 맵 정보들 모두 삭제
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
 
         // 맵 생성
-        GenerateFloor(xSize, ySize);
-        GenerateWall(xSize, ySize);
+        GenerateFloor(width, height);
+        GenerateWall(width, height);
     }
 
     // 바닥 생성 함수

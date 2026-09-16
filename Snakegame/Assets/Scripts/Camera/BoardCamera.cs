@@ -28,11 +28,6 @@ public class BoardCamera : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        UpdateCamera();
-    }
-
     // 카메라 업데이트
     public void UpdateCamera()
     {
@@ -40,16 +35,47 @@ public class BoardCamera : MonoBehaviour
         {
             return;   
         }
-        
-        UpdatePosition();
+
+        // UpdateViewport();
         UpdateSize();
+        UpdatePosition();
     }
+
+    // private void UpdateViewport()
+    // {
+    //     Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
+    //     if (canvas == null)
+    //     {
+    //         Debug.LogError("BoardCamera:: BoardViewport Canvas not found!");
+    //         return;   
+    //     }
+    //     
+    //     RectTransform cavasRectTransform = canvas.transform as RectTransform;
+    //     if (cavasRectTransform == null)
+    //     {
+    //         Debug.LogError("BoardCamera:: BoardViewport RectTransform not found!");
+    //         return;   
+    //     }
+    //     
+    //     Vector3[] corners = new Vector3[4];
+    //     boardViewport.GetWorldCorners(corners);
+    //     
+    //     Camera canvasCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+    //     Vector2 bottomLeft = RectTransformUtility.WorldToScreenPoint(canvasCamera, corners[0]);
+    //     Vector2 topRight = RectTransformUtility.WorldToScreenPoint(canvasCamera, corners[2]);
+    // 
+    //     float x = bottomLeft.x / Screen.width;
+    //     float y = bottomLeft.y / Screen.height;
+    //     float width = (topRight.x - bottomLeft.x) / Screen.width;
+    //     float height = (topRight.y - bottomLeft.y) / Screen.height;
+    // 
+    //     targetCamera.rect = new Rect(x, y, width, height);
+    // }
 
     // 위치 업데이트
     private void UpdatePosition()
     {
         Vector3 boardCenter = boardManager.GetBoardCenterWorld();
-        
         Vector2 viewportOffset = GetViewportWorldOffset();
         
         transform.position = new Vector3( 
@@ -57,62 +83,67 @@ public class BoardCamera : MonoBehaviour
             boardCenter.y - viewportOffset.y + cameraOffset.y,
             transform.position.z);
     }
-    
-    // 크기 업데이트
-    private void UpdateSize()
-    {
-        float boardWidth = boardManager.Width;
-        float boardHeight = boardManager.Height;
 
-        // 여백 추가
-        boardWidth += boardPadding;
-        boardHeight += boardPadding;
-        
-        Rect viewportRect = boardViewport.rect;
-        if( viewportRect.width <= 0.0f || viewportRect.height <= 0.0f ) 
-            return;
-        
-        // boardViewport 가로 세로 비율
-        float viewportAspect = viewportRect.width / viewportRect.height;
-        
-        // 세로 기준으로 필요한 Orthographic Size
-        float verticalSize = boardHeight * 0.5f;
-        
-        // 가로 기준으로 필요한 Orthographic Size
-        float horizontalSize = (boardWidth * 0.5f) / viewportAspect;
-
-        // 둘 중 더 큰 값 사용으로 전체 화면이 들어오도록 처리
-        targetCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
-    }
-
-    // 비율 계산 반환
     private Vector2 GetViewportWorldOffset()
     {
         Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
         if (canvas == null)
         {
-            return Vector2.zero;  
+            Debug.LogError("BoardCamera:: BoardViewport Canvas not found!");
+            return Vector2.zero;   
         }
         
-        RectTransform canvasRect = canvas.transform as RectTransform;
-        if (canvasRect == null)
+        RectTransform canvasRectTransform = canvas.transform as RectTransform;
+        if (canvasRectTransform == null)
         {
-            return Vector2.zero; 
+            return Vector2.zero;
         }
         
-        // Canvas의 중심과 BoardViewport 중심 사이의 화면상 위치 차이를 계산
-        Vector3 canvasCenterWorld = canvasRect.TransformPoint(canvasRect.rect.center);
-        Vector3 viewportCenterWorld = boardViewport.TransformPoint(boardViewport.rect.center);
+        Vector3 canvasCenterWorld = canvasRectTransform.TransformPoint(canvasRectTransform.rect.center);    // Canvas 중심
+        Vector3 viewportCenterWorld = boardViewport.TransformPoint(boardViewport.rect.center);    // BoardViewport 중심
         
-        Vector3 screenCanvasCenter = RectTransformUtility.WorldToScreenPoint(null, canvasCenterWorld);
-        Vector3 screenViewportCenter = RectTransformUtility.WorldToScreenPoint(null, viewportCenterWorld);
+        // UI 좌표 → 화면 좌표
+        Vector2 canvasCenterScreen = RectTransformUtility.WorldToScreenPoint(null, canvasCenterWorld);
+        Vector2 viewportCenterScreen = RectTransformUtility.WorldToScreenPoint(null, viewportCenterWorld);
 
-        Vector2 pixelOffset = screenViewportCenter - screenCanvasCenter;
+        // 화면 중심에서 BoardViewport 중심까지의 Pixel 차이
+        Vector2 pixelOffset = viewportCenterScreen - canvasCenterScreen;
 
-        // 화면 픽셀 차이를 현재 Orthographic Camera의 World Unit 차이로 변환
+        // 현재 Orthographic Camera의
+        // Pixel → World Unit 변환
         float worldHeight = targetCamera.orthographicSize * 2.0f;
         float worldPerPixel = worldHeight / Screen.height;
 
         return pixelOffset * worldPerPixel;
+    }
+    
+    // 크기 업데이트
+    private void UpdateSize()
+    {
+        float boardWidth = boardManager.Width + boardPadding;
+        float boardHeight = boardManager.Height + boardPadding;
+
+        Rect viewportRect = boardViewport.rect;
+        if (viewportRect.width <= 0.0f || viewportRect.height <= 0.0f)
+        {
+            return;
+        }
+
+        Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        if (canvasRect == null)
+            return;
+
+        float viewportAspect = viewportRect.width / viewportRect.height;
+
+        // BoardViewport가 전체 Canvas에서 차지하는 비율
+        float viewportHeightRatio = viewportRect.height / canvasRect.rect.height;
+        float verticalSize = boardHeight * 0.5f;
+        float horizontalSize = (boardWidth * 0.5f) / viewportAspect;
+        float requiredSize = Mathf.Max(verticalSize, horizontalSize);
+
+        // 전체 화면 Camera에서 BoardViewport 높이만큼
+        // 사용하도록 크기를 보정
+        targetCamera.orthographicSize = requiredSize / viewportHeightRatio;
     }
 }
