@@ -25,11 +25,6 @@ public class GameHUD : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        Initialize();
-    }
-
     private void Initialize()
     {
         if (gameManager == null)
@@ -51,6 +46,8 @@ public class GameHUD : MonoBehaviour
         // 이벤트 등록
         gameManager.OnCountChanged += UpdateFoodCount;
         gameManager.OnBestCountChanged += UpdateBestCount;
+
+        Initialize();
     }
     
     private void OnDisable()
@@ -71,7 +68,7 @@ public class GameHUD : MonoBehaviour
         {
             return;   
         }
-
+        
         foodCountText.text = count.ToString();
     }
 

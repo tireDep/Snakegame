@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     // UI 구독 함수
     public event Action<int> OnCountChanged;
     public event Action<int> OnBestCountChanged;
+    public event Action<GameState> OnGameStateChanged;
     
     private void Start()
     {
@@ -56,8 +57,8 @@ public class GameManager : MonoBehaviour
 
     private void Initialize()
     {
-        gameState = GameState.Ready;
-        StartGame();
+        ChangeState(GameState.Ready);
+        foodCount = 0;
     }
 
     public void StartGame()
@@ -73,7 +74,7 @@ public class GameManager : MonoBehaviour
         foodManager.Initialize();
         ResetCount();
 
-        gameState = GameState.Playing;
+        ChangeState(GameState.Playing);
     }
 
     public void OnGameOver()
@@ -83,9 +84,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        gameState = GameState.GameOver;
-        Debug.Log("Game Over!");
-        Debug.Log("count : " + foodCount + " !");
+        // ChangeState(GameState.GameOver);
+        ChangeState(GameState.Ready);
     }
 
     public void OnGameClear()
@@ -95,9 +95,10 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        gameState = GameState.Clear;
+        ChangeState(GameState.Clear);
         Debug.Log("Clear!");
         Debug.Log("count : " + foodCount + " !");
+        // todo : state.ready로 변경 + 사운드 추가 or clear 화면 제작
     }
     
     public void RestartGame()
@@ -131,5 +132,17 @@ public class GameManager : MonoBehaviour
     {
         foodCount = 0;
         OnCountChanged?.Invoke(foodCount);
+        OnBestCountChanged?.Invoke(bestCount);
+    }
+    
+    public void ChangeState(GameState newState)
+    {
+        if (gameState == newState)
+        {
+            return;
+        }
+        
+        gameState = newState;
+        OnGameStateChanged?.Invoke(gameState);
     }
 }
