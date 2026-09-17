@@ -56,16 +56,6 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
-    private void Update()
-    {
-        // // >> todo
-        // if (gameState == GameState.GameOver)
-        // {
-        //     RestartGame();
-        // }
-        // // <<
-    }
-
     public void StartGame()
     {
         if (boardManager == null || foodManager == null || snakeController == null || boardCamera == null)
@@ -125,7 +115,6 @@ public class GameManager : MonoBehaviour
     {
         foodCount++;
         OnCountChanged?.Invoke(foodCount);
-        Debug.Log("count : " + foodCount);
     }
     
     public void ResetCount()
