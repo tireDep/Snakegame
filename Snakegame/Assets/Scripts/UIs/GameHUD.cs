@@ -6,7 +6,8 @@ public class GameHUD : MonoBehaviour
 {
     private GameManager gameManager;
     
-    [SerializeField] private TMP_Text foodCountText;
+    [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
+    [SerializeField] private TMP_Text bestCountText;    // 최대 개수 텍스트
     
     private void Awake()
     {
@@ -24,6 +25,22 @@ public class GameHUD : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        if (gameManager == null)
+        {
+            return;
+        }
+        
+        UpdateFoodCount(gameManager.FoodCount);
+        UpdateBestCount(gameManager.BestCount);
+    }
+    
     private void OnEnable()
     {
         if (gameManager == null)
@@ -33,16 +50,7 @@ public class GameHUD : MonoBehaviour
 
         // 이벤트 등록
         gameManager.OnCountChanged += UpdateFoodCount;
-    }
-
-    private void Start()
-    {
-        if (gameManager == null)
-        {
-            return;
-        }
-
-        UpdateFoodCount(gameManager.FoodCount);
+        gameManager.OnBestCountChanged += UpdateBestCount;
     }
     
     private void OnDisable()
@@ -54,6 +62,7 @@ public class GameHUD : MonoBehaviour
 
         // 이벤트 해제
         gameManager.OnCountChanged -= UpdateFoodCount;
+        gameManager.OnBestCountChanged -= UpdateBestCount;
     }
 
     private void UpdateFoodCount(int count)
@@ -64,5 +73,15 @@ public class GameHUD : MonoBehaviour
         }
 
         foodCountText.text = count.ToString();
+    }
+
+    private void UpdateBestCount(int count)
+    {
+        if (bestCountText == null)
+        {
+            return;   
+        }
+        
+        bestCountText.text = count.ToString();
     }
 }

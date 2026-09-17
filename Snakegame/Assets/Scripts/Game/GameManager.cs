@@ -13,9 +13,13 @@ public class GameManager : MonoBehaviour
 
     private int foodCount = 0;  // 아이템 획득 횟수
     public int FoodCount => foodCount;
+
+    private int bestCount = 0;  // 최대 카운트
+    public int BestCount => bestCount;
     
     // UI 구독 함수
     public event Action<int> OnCountChanged;
+    public event Action<int> OnBestCountChanged;
     
     private void Start()
     {
@@ -115,6 +119,12 @@ public class GameManager : MonoBehaviour
     {
         foodCount++;
         OnCountChanged?.Invoke(foodCount);
+
+        if (foodCount > bestCount)
+        {
+            bestCount = foodCount;
+            OnBestCountChanged?.Invoke(bestCount);
+        }
     }
     
     public void ResetCount()
