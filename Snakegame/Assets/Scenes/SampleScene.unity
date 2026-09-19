@@ -1583,8 +1583,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0554b8c344a581349a6be1104b1e65f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardManager
-  width: 10
-  height: 10
   floorTilemap: {fileID: 1498474551}
   wallTilemap: {fileID: 479967034}
   floorTiles:
@@ -1946,7 +1944,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1250502689
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1989,6 +1987,7 @@ MonoBehaviour:
   dimmedPanel: {fileID: 1750073682}
   foodCountText: {fileID: 911536489}
   bestCountText: {fileID: 1806360357}
+  boardSizeText: {fileID: 570132954}
 --- !u!1 &1498474548
 GameObject:
   m_ObjectHideFlags: 0
@@ -3735,6 +3734,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8448267faed8c6419613f6f0e01c1b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  boardSize: 0
+  SmallBoardSize: 5
+  MediumBoardSize: 10
+  LargeBoardSize: 15
+  ExtarLargeBoardSize: 25
 --- !u!4 &2031925231
 Transform:
   m_ObjectHideFlags: 0

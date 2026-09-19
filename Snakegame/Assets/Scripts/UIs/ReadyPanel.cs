@@ -47,10 +47,20 @@ public class ReadyPanel : MonoBehaviour
         OnGameStateChanged(gameManager.GameState);
     }
 
-    private void UpdateScoreText()
+    private void UpdateAllCountText(int currentCount, int bestCount)
     {
-        foodCountText.text = gameManager.FoodCount.ToString();
-        bestCountText.text = gameManager.BestCount.ToString();
+        UpdateCountText(currentCount);
+        UpdateBestCountText(bestCount);
+    }
+
+    private void UpdateCountText(int count)
+    {
+        foodCountText.text = count.ToString();
+    }
+    
+    private void UpdateBestCountText(int count)
+    {
+        bestCountText.text = count.ToString();
     }
     
     private void OnEnable()
@@ -62,8 +72,10 @@ public class ReadyPanel : MonoBehaviour
         
         gameManager.OnGameStateChanged += OnGameStateChanged;
         gameManager.OnBoardSizeChanged += UpdateBoardSize;
-        
-        UpdateScoreText();
+        gameManager.OnLastFoodCountChanged += UpdateCountText;
+        gameManager.OnBestCountChanged += UpdateBestCountText;
+
+        UpdateAllCountText(gameManager.LastFoodCount, gameManager.BestCount);
         UpdateBoardSize(gameManager.BoardSize);
     }
     
@@ -76,6 +88,8 @@ public class ReadyPanel : MonoBehaviour
         
         gameManager.OnGameStateChanged -= OnGameStateChanged;
         gameManager.OnBoardSizeChanged -= UpdateBoardSize;
+        gameManager.OnLastFoodCountChanged -= UpdateCountText;
+        gameManager.OnBestCountChanged -= UpdateBestCountText;
     }
 
     // 시작 버튼 함수
@@ -129,8 +143,12 @@ public class ReadyPanel : MonoBehaviour
             dimmedPanel.SetActive(isReady);
         }
 
+        if (gameManager != null)
+        {
+            UpdateAllCountText(gameManager.LastFoodCount, gameManager.BestCount);
+        }
+        
         gameObject.SetActive(isReady);
-        UpdateScoreText();   
     }
 
     private void UpdateBoardSize(BoardSize boardSize)

@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
     private int bestCount = 0;  // 최대 카운트
     public int BestCount => bestCount;
     
+    private int[] lastFoodCounts = new int[System.Enum.GetValues(typeof(BoardSize)).Length];   // 직전 맵 별로 획득 개수
+    public int LastFoodCount => lastFoodCounts[(int)boardSize];
+    
     [Header("Board Size")]
     [SerializeField] private BoardSize boardSize = BoardSize.Small;
     public BoardSize BoardSize => boardSize;
@@ -32,6 +35,12 @@ public class GameManager : MonoBehaviour
     public event Action<int> OnBestCountChanged;
     public event Action<GameState> OnGameStateChanged;
     public event Action<BoardSize> OnBoardSizeChanged;
+    public event Action<int> OnLastFoodCountChanged;
+
+    private void Awake()
+    {
+        LoadGameData();
+    }
     
     private void Start()
     {
@@ -97,8 +106,8 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-
-        // ChangeState(GameState.GameOver);
+        
+        SaveLastPlayRecord();
         ChangeState(GameState.Ready);
     }
 
@@ -108,8 +117,10 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-
+        
+        SaveLastPlayRecord();
         ChangeState(GameState.Clear);
+        
         Debug.Log("Clear!");
         Debug.Log("count : " + foodCount + " !");
         // todo : state.ready로 변경 + 사운드 추가 or clear 화면 제작
@@ -144,10 +155,10 @@ public class GameManager : MonoBehaviour
     
     public void ResetCount()
     {
+        foodCount = 0;
+        
         OnCountChanged?.Invoke(foodCount);
         OnBestCountChanged?.Invoke(bestCount);
-        
-        foodCount = 0;
     }
     
     public void ChangeState(GameState newState)
@@ -177,6 +188,14 @@ public class GameManager : MonoBehaviour
 
         boardSize = (BoardSize)newSizeIndex;
         OnBoardSizeChanged?.Invoke(boardSize);
+        
+        bestCount = GameSaveData.LoadBestCount(boardSize);
+        OnBestCountChanged?.Invoke(bestCount);
+        
+        OnLastFoodCountChanged?.Invoke(lastFoodCounts[(int)boardSize]);
+        
+        // 데이터 저장
+        GameSaveData.SaveBoardSize(boardSize);
     }
 
     private int GetBoardSize()
@@ -205,4 +224,15 @@ public class GameManager : MonoBehaviour
         return SmallBoardSize; 
     }
 
+    private void LoadGameData()
+    {
+        boardSize = GameSaveData.LoadBoardSize();
+        bestCount = GameSaveData.LoadBestCount(boardSize);
+    }
+
+    private void SaveLastPlayRecord()
+    {
+        GameSaveData.SaveBestCount(boardSize, bestCount);
+        lastFoodCounts[(int)boardSize] = foodCount;
+    }
 }
