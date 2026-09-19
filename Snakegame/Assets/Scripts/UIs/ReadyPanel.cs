@@ -9,6 +9,8 @@ public class ReadyPanel : MonoBehaviour
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
     [SerializeField] private TMP_Text bestCountText;    // 최대 개수 텍스트
     
+    [SerializeField] private TMP_Text boardSizeText;    // 맵 크기 텍스트
+    
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
@@ -45,7 +47,7 @@ public class ReadyPanel : MonoBehaviour
         OnGameStateChanged(gameManager.GameState);
     }
 
-    private void Initialize()
+    private void UpdateScoreText()
     {
         foodCountText.text = gameManager.FoodCount.ToString();
         bestCountText.text = gameManager.BestCount.ToString();
@@ -59,6 +61,21 @@ public class ReadyPanel : MonoBehaviour
         }
         
         gameManager.OnGameStateChanged += OnGameStateChanged;
+        gameManager.OnBoardSizeChanged += UpdateBoardSize;
+        
+        UpdateScoreText();
+        UpdateBoardSize(gameManager.BoardSize);
+    }
+    
+    public void OnDisable()
+    {
+        if (gameManager == null)
+        {
+            return;   
+        }
+        
+        gameManager.OnGameStateChanged -= OnGameStateChanged;
+        gameManager.OnBoardSizeChanged -= UpdateBoardSize;
     }
 
     // 시작 버튼 함수
@@ -85,13 +102,23 @@ public class ReadyPanel : MonoBehaviour
     // 맵 변경 앞으로 버튼 함수
     public void OnClickPrev()
     {
+        if (gameManager == null)
+        {
+            return;
+        }
         
+        gameManager.ChangeBoardSize(-1);
     }
 
     // 맵 변경 뒤로 버튼 함수
     public void OnClickNext()
     {
+        if (gameManager == null)
+        {
+            return;
+        }
         
+        gameManager.ChangeBoardSize(1);
     }
 
     private void OnGameStateChanged(GameState newState)
@@ -103,7 +130,33 @@ public class ReadyPanel : MonoBehaviour
         }
 
         gameObject.SetActive(isReady);
-        Initialize();   
+        UpdateScoreText();   
     }
-    
+
+    private void UpdateBoardSize(BoardSize boardSize)
+    {
+        switch (boardSize)
+        {
+            case BoardSize.Small:
+            {
+                boardSizeText.text = "S";
+            }
+                break;
+            case BoardSize.Medium:
+            {
+                boardSizeText.text = "M";
+            }
+                break;
+            case BoardSize.Large:
+            {
+                boardSizeText.text = "L";
+            }
+                break;
+            case BoardSize.ExtraLarge:
+            {
+                boardSizeText.text = "XL";
+            }
+                break;
+        }
+    }
 }

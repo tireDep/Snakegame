@@ -13,3 +13,11 @@ public enum GameState
     GameOver,
     Clear
 }
+
+public enum BoardSize
+{
+    Small,
+    Medium,
+    Large,
+    ExtraLarge
+}

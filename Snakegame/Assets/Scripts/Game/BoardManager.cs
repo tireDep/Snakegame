@@ -4,11 +4,11 @@ using UnityEngine.Tilemaps;
 
 public class BoardManager : MonoBehaviour
 {
-    [Header("Board Size")]
-    const int DEFAULT_MAP_SIZE = 25;
+    private int width = 0;     // 맵 넓이
+    private int height = 0;   // 맵 높이
+    public int Width => width;
+    public int Height => height;
     
-    [SerializeField] private int width = DEFAULT_MAP_SIZE;     // 맵 넓이
-    [SerializeField] private int height = DEFAULT_MAP_SIZE;   // 맵 높이
     
     [Header("Tilemap")]
     [SerializeField] private Tilemap floorTilemap;            // 맵 타일맵
@@ -18,17 +18,17 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private List<TileBase> floorTiles;    // 맵 타일
     [SerializeField] private TileBase wallTile;             // 벽 타일
     
-    public int Width => width;
-    public int Height => height;
-    
     // 타일맵 생성 함수
-    public void GenerateMap()
+    public void GenerateMap(int xSize, int ySize)
     {
-        if (width <= 0 || height <= 0)
+        if (xSize <= 0 || ySize <= 0)
         {
             Debug.LogError("BoardManager::GenerateMap" + "Width: {xSize}, Height: {ySize}");
             return;
         }
+        
+        width = xSize;
+        height = ySize;
         
         // 생성 전에 기존 생성된 맵 정보들 모두 삭제
         floorTilemap.ClearAllTiles();

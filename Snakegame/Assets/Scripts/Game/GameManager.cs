@@ -17,10 +17,21 @@ public class GameManager : MonoBehaviour
     private int bestCount = 0;  // 최대 카운트
     public int BestCount => bestCount;
     
+    [Header("Board Size")]
+    [SerializeField] private BoardSize boardSize = BoardSize.Small;
+    public BoardSize BoardSize => boardSize;
+
+    [SerializeField] private int SmallBoardSize = 5;
+    [SerializeField] private int MediumBoardSize = 10;
+    [SerializeField] private int LargeBoardSize = 15;
+    [SerializeField] private int ExtarLargeBoardSize = 25;
+    
+    
     // UI 구독 함수
     public event Action<int> OnCountChanged;
     public event Action<int> OnBestCountChanged;
     public event Action<GameState> OnGameStateChanged;
+    public event Action<BoardSize> OnBoardSizeChanged;
     
     private void Start()
     {
@@ -68,11 +79,14 @@ public class GameManager : MonoBehaviour
             return;
         }
         
-        boardManager.GenerateMap();
+        ResetCount();
+        
+        int boardSize = GetBoardSize();
+        boardManager.GenerateMap(boardSize, boardSize);
+        
         boardCamera.UpdateCamera();
         snakeController.Initialize();
         foodManager.Initialize();
-        ResetCount();
 
         ChangeState(GameState.Playing);
     }
@@ -130,9 +144,10 @@ public class GameManager : MonoBehaviour
     
     public void ResetCount()
     {
-        foodCount = 0;
         OnCountChanged?.Invoke(foodCount);
         OnBestCountChanged?.Invoke(bestCount);
+        
+        foodCount = 0;
     }
     
     public void ChangeState(GameState newState)
@@ -145,4 +160,49 @@ public class GameManager : MonoBehaviour
         gameState = newState;
         OnGameStateChanged?.Invoke(gameState);
     }
+
+    public void ChangeBoardSize(int selectIndex)
+    {
+        int sizeCount = System.Enum.GetValues(typeof(BoardSize)).Length;
+        int newSizeIndex = (int)boardSize + selectIndex;
+        
+        if (newSizeIndex < 0)
+        {
+            newSizeIndex = sizeCount - 1;
+        }
+        else if (newSizeIndex >= sizeCount)
+        {
+            newSizeIndex = 0;
+        }
+
+        boardSize = (BoardSize)newSizeIndex;
+        OnBoardSizeChanged?.Invoke(boardSize);
+    }
+
+    private int GetBoardSize()
+    {
+        switch (boardSize)
+        {
+            case BoardSize.Small:
+            {
+                return SmallBoardSize;
+            }
+            case BoardSize.Medium:
+            {
+                return MediumBoardSize;
+            }
+            case BoardSize.Large:
+            {
+                return LargeBoardSize;
+            }
+            case BoardSize.ExtraLarge:
+            {
+                return ExtarLargeBoardSize;
+            }
+        }
+        
+        Debug.LogError($"GameManager::GetBoardSize Invalid BoardSize: {boardSize}");
+        return SmallBoardSize; 
+    }
+
 }

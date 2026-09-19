@@ -72,8 +72,6 @@ public class SnakeController : MonoBehaviour
         Vector2Int startPosition = boardManager.GetCenterPosition();
         if (startPosition.x + startingLength > boardManager.Width)
         { 
-            // todo :
-            // 맵 크기 제한, 최초 시작 길이 제한 필요
             Debug.LogError("SankeController:: Initialize:: Invalid length!");
             return;
         }
