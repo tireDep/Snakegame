@@ -47,10 +47,11 @@ public class ReadyPanel : MonoBehaviour
         OnGameStateChanged(gameManager.GameState);
     }
 
-    private void UpdateAllCountText(int currentCount, int bestCount)
+    private void UpdateAllCountText()
     {
-        UpdateCountText(currentCount);
-        UpdateBestCountText(bestCount);
+        UpdateCountText(gameManager.LastFoodCount);
+        UpdateBestCountText(gameManager.BestCount);
+        UpdateBoardSize(gameManager.BoardSize);
     }
 
     private void UpdateCountText(int count)
@@ -75,8 +76,7 @@ public class ReadyPanel : MonoBehaviour
         gameManager.OnLastFoodCountChanged += UpdateCountText;
         gameManager.OnBestCountChanged += UpdateBestCountText;
 
-        UpdateAllCountText(gameManager.LastFoodCount, gameManager.BestCount);
-        UpdateBoardSize(gameManager.BoardSize);
+        UpdateAllCountText();
     }
     
     public void OnDisable()
@@ -145,7 +145,7 @@ public class ReadyPanel : MonoBehaviour
 
         if (gameManager != null)
         {
-            UpdateAllCountText(gameManager.LastFoodCount, gameManager.BestCount);
+            UpdateAllCountText();
         }
         
         gameObject.SetActive(isReady);
