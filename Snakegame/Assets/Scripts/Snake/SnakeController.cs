@@ -7,8 +7,10 @@ public class SnakeController : MonoBehaviour
 {
     [SerializeField] private int startingLength = 3;    // 초기 길이
     
-    BoardManager boardManager;
-    FoodManager foodManager;
+    private BoardManager boardManager;
+    private FoodManager foodManager;
+    private GameManager gameManager;
+    private AudioManager audioManager;
     
     private readonly Snake snake = new Snake();
     public Snake SnakePlayer => snake;
@@ -21,8 +23,6 @@ public class SnakeController : MonoBehaviour
     private float moveTimer;
     private bool hasQueuedDirection;     // 한 Tick 안에서 여러 번 방향이 변경되는 것 방지
     private Vector2Int nextDirection;   // 다음 이동 시점에 반영
-    
-    private GameManager gameManager;
     
     private void Awake()
     {
@@ -45,6 +45,12 @@ public class SnakeController : MonoBehaviour
         {
             Debug.LogError("SnakeController:: GameManager not found!");
             return;
+        }
+        
+        audioManager = FindAnyObjectByType<AudioManager>();
+        if (audioManager == null)
+        {
+            Debug.LogError("SnakeController:: AudioManager not found!");
         }
     }
 
@@ -151,6 +157,8 @@ public class SnakeController : MonoBehaviour
         // 입력을 즉시 적용하지 않고, 다음 이동 틱에서 적용
         nextDirection = newDirection;
         hasQueuedDirection = true;
+        
+        audioManager.PlayMove();
     }
 
     // 이동 처리 업데이트
@@ -200,6 +208,7 @@ public class SnakeController : MonoBehaviour
         if (!gameManager.IsPlaying())
         {
             snakeView.SetGameOver(true);
+            audioManager.PlayCollision();
             return;
         }
         
@@ -214,11 +223,13 @@ public class SnakeController : MonoBehaviour
         {
             foodManager.ConsumeFood();
             gameManager.AddFoodCount();
+            audioManager.PlayFood();
 
             // 아이템 생성에 실패 하면, 모든 공간이 뱀으로 채워진 것
             if (!foodManager.SpawnFood())
             {
                 gameManager.OnGameClear();
+                audioManager.PlayClear();
             }
         }
     }

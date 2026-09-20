@@ -4,6 +4,7 @@ public class GameSaveData : MonoBehaviour
 {
     private const string BEST_COUNT_KEY = "BestCount";
     private const string BOARD_SIZE_KEY = "BoardSize";
+    private const string SOUND_ENABLE_KEY = "SoundEnable";
     
     public static void SaveBestCount( BoardSize boardSize, int bestCount)
     {
@@ -58,5 +59,16 @@ public class GameSaveData : MonoBehaviour
         }
         
         return (BoardSize)value;
+    }
+
+    public static void SaveSoundEnable(bool isEnable)
+    {
+        PlayerPrefs.SetInt(SOUND_ENABLE_KEY, isEnable? 1 : 0);
+        PlayerPrefs.Save();
+    }
+    
+    public static bool LoadSoundEnabled()
+    {
+        return PlayerPrefs.GetInt(SOUND_ENABLE_KEY, 1) == 1;
     }
 }

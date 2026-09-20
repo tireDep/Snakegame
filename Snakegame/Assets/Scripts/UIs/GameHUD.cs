@@ -1,13 +1,16 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameHUD : MonoBehaviour
 {
     private GameManager gameManager;
+    private AudioManager audioManager;
     
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
     [SerializeField] private TMP_Text bestCountText;    // 최대 개수 텍스트
+    [SerializeField] private TMP_Text soundButtonText;
     
     private void Awake()
     {
@@ -23,6 +26,13 @@ public class GameHUD : MonoBehaviour
             Debug.LogError("GameHUD:: FoodCountText not found!");
             return;   
         }
+
+        audioManager = FindAnyObjectByType<AudioManager>();
+        if (audioManager == null)
+        {
+            Debug.LogError("GameHUD:: AudioManager not found!");
+            return;   
+        }
     }
 
     private void Initialize()
@@ -34,6 +44,8 @@ public class GameHUD : MonoBehaviour
         
         UpdateFoodCount(gameManager.FoodCount);
         UpdateBestCount(gameManager.BestCount);
+
+        UpdateSoundText();
     }
     
     private void OnEnable()
@@ -80,5 +92,26 @@ public class GameHUD : MonoBehaviour
         }
         
         bestCountText.text = count.ToString();
+    }
+    
+    public void ToggleSoundEnable()
+    {
+        if (audioManager == null)
+        {
+            return;
+        }
+        
+        audioManager.SetSoundEnable(!audioManager.SoundEnable);
+        UpdateSoundText();
+    }
+    
+    private void UpdateSoundText()
+    {
+        if (audioManager == null || soundButtonText == null)
+        {
+            return;
+        }
+        
+        soundButtonText.text = audioManager.SoundEnable ? "MUTE" : "UNMUTE";
     }
 }
