@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     private FoodManager foodManager;
     private SnakeController snakeController;
     private BoardCamera boardCamera;
+    private AudioManager audioManager;  // 사운드 관리자
     
     private GameState gameState;
     public GameState GameState => gameState;
@@ -72,6 +73,12 @@ public class GameManager : MonoBehaviour
             return;   
         }
 
+        audioManager = FindAnyObjectByType<AudioManager>();
+        if (audioManager == null)
+        {
+            Debug.LogError("GameManager:: AudioManager not found!");
+        }
+
         Initialize();
     }
 
@@ -106,8 +113,12 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        
+
         SaveLastPlayRecord();
+        snakeController.SetGameOverVisual(true);
+        foodManager.SetPlayFoodAnim(false);
+        audioManager?.PlayCollision();
+
         ChangeState(GameState.Ready);
     }
 
@@ -117,18 +128,20 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        
+
         SaveLastPlayRecord();
-        ChangeState(GameState.Clear);
-        
+        foodManager.SetPlayFoodAnim(false);
+        audioManager?.PlayClear();
+
+        ChangeState(GameState.Ready);
+
         Debug.Log("Clear!");
         Debug.Log("count : " + foodCount + " !");
-        // todo : state.ready로 변경 + 사운드 추가 or clear 화면 제작
     }
-    
+
     public void RestartGame()
     {
-        if (gameState != GameState.GameOver)
+        if (gameState != GameState.Ready)
         {
             return;
         }
@@ -152,7 +165,72 @@ public class GameManager : MonoBehaviour
             OnBestCountChanged?.Invoke(bestCount);
         }
     }
-    
+
+    // 뱀 이동 가능 여부와 성장 여부를 처리하는 함수
+    public bool TryProcessSnakeMove(Vector2Int newHeadPosition, out bool willGrow)
+    {
+        willGrow = false;
+
+        if (gameState != GameState.Playing)
+        {
+            return false;
+        }
+
+        if (boardManager == null || foodManager == null || snakeController == null)
+        {
+            return false;
+        }
+
+        // 보드 밖으로 이동하면 게임 오버 처리
+        if (!boardManager.IsInBounds(newHeadPosition))
+        {
+            OnGameOver();
+            return false;
+        }
+
+        // 음식 위치로 이동하는지 먼저 확인해서 성장 여부를 결정
+        willGrow = foodManager.CheckFood(newHeadPosition);
+
+        // 자기 몸과 충돌하면 게임 오버 처리
+        if (snakeController.CheckBodyCollision(newHeadPosition, willGrow))
+        {
+            OnGameOver();
+            return false;
+        }
+
+        return true;
+    }
+
+    // 뱀 이동 후 음식 소비와 클리어 여부를 처리하는 함수
+    public void OnSnakeMoved(bool willGrow)
+    {
+        if (gameState != GameState.Playing)
+        {
+            return;
+        }
+
+        if (!willGrow)
+        {
+            return;
+        }
+
+        if (foodManager == null)
+        {
+            return;
+        }
+
+        // 음식 소비 처리 후 점수와 사운드 갱신
+        foodManager.ConsumeFood();
+        AddFoodCount();
+        audioManager?.PlayFood();
+
+        // 새 음식을 생성할 공간이 없으면 게임 클리어 처리
+        if (!foodManager.SpawnFood())
+        {
+            OnGameClear();
+        }
+    }
+
     public void ResetCount()
     {
         foodCount = 0;

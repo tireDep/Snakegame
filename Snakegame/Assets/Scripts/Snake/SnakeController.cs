@@ -8,7 +8,6 @@ public class SnakeController : MonoBehaviour
     [SerializeField] private int startingLength = 3;    // 초기 길이
     
     private BoardManager boardManager;
-    private FoodManager foodManager;
     private GameManager gameManager;
     private AudioManager audioManager;
     
@@ -31,13 +30,6 @@ public class SnakeController : MonoBehaviour
         {
             Debug.LogError("SnakeController:: BoardManager not found!");
             return;   
-        }
-
-        foodManager = FindAnyObjectByType<FoodManager>();
-        if (foodManager == null)
-        {
-            Debug.LogError("SnakeController:: FoodManager not found!");
-            return;  
         }
 
         gameManager = FindAnyObjectByType<GameManager>();
@@ -158,7 +150,7 @@ public class SnakeController : MonoBehaviour
         nextDirection = newDirection;
         hasQueuedDirection = true;
         
-        audioManager.PlayMove();
+        audioManager?.PlayMove();
     }
 
     // 이동 처리 업데이트
@@ -180,7 +172,7 @@ public class SnakeController : MonoBehaviour
     // 실제 이동
     private void Move()
     {
-        if (gameManager == null || boardManager == null || foodManager == null || snakeView == null)
+        if (gameManager == null || boardManager == null || snakeView == null)
         {
             return;    
         }
@@ -190,26 +182,9 @@ public class SnakeController : MonoBehaviour
         
         Vector2Int newHeadPosition = snake.HeadPosition + currentDirection;
         
-        // todo :
-        // >> Wall Collision
-        // 새로운 head 위치가 board 범위를 벗어나면 임시 이동 중지. 추후 게임오버로 구현 필요
-        if (!boardManager.IsInBounds(newHeadPosition))
+        // GameManager에서 이동 가능 여부와 성장 여부를 판단
+        if (!gameManager.TryProcessSnakeMove(newHeadPosition, out bool willGrow))
         {
-            gameManager.OnGameOver();
-        }
-
-        // 자기 몸 충돌
-        bool willGrow = foodManager.CheckFood(newHeadPosition);
-        if (CheckBodyCollision(newHeadPosition, willGrow))
-        {
-            gameManager.OnGameOver();
-        }
-
-        if (!gameManager.IsPlaying())
-        {
-            snakeView.SetGameOver(true);
-            audioManager.PlayCollision();
-            foodManager.SetPlayFoodAnim(false);
             return;
         }
         
@@ -219,24 +194,12 @@ public class SnakeController : MonoBehaviour
         // 변경된 좌표 기반으로 위치와 회전 갱신
         snakeView.Refresh(snake.Positions, currentDirection);
 
-        // 이동 후 아이템 소비, 새로운 아이템 생성
-        if (willGrow)
-        {
-            foodManager.ConsumeFood();
-            gameManager.AddFoodCount();
-            audioManager.PlayFood();
-
-            // 아이템 생성에 실패 하면, 모든 공간이 뱀으로 채워진 것
-            if (!foodManager.SpawnFood())
-            {
-                gameManager.OnGameClear();
-                audioManager.PlayClear();
-            }
-        }
+        // 이동 후 게임 진행 결과 처리
+        gameManager.OnSnakeMoved(willGrow);
     }
 
     // 자기 자신 충돌 체크
-    private bool CheckBodyCollision(Vector2Int newHeadPosition, bool willGrow)
+    public bool CheckBodyCollision(Vector2Int newHeadPosition, bool willGrow)
     {
         IReadOnlyList<Vector2Int> positions = snake.Positions;
         if (positions == null || positions.Count == 0)
@@ -264,6 +227,18 @@ public class SnakeController : MonoBehaviour
         return false;
     }
     
+    // 게임 오버 시 뱀 표시 상태 변경 함수
+    public void SetGameOverVisual(bool isGameOver)
+    {
+        if (snakeView == null)
+        {
+            return;
+        }
+
+        snakeView.SetGameOver(isGameOver);
+    }
+
+    // 특정 위치가 뱀 몸에 포함되는지 확인하는 함수
     public bool CheckContains(Vector2Int position)
     {
         return snake.CheckContains(position);
