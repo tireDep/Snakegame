@@ -209,6 +209,7 @@ public class SnakeController : MonoBehaviour
         {
             snakeView.SetGameOver(true);
             audioManager.PlayCollision();
+            foodManager.SetPlayFoodAnim(false);
             return;
         }
         

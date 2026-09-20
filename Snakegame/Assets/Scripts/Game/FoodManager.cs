@@ -33,11 +33,6 @@ public class FoodManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void CreateFood()
     {
         if(foodPrefabs == null)
@@ -137,5 +132,16 @@ public class FoodManager : MonoBehaviour
         }
         
         SpawnFood();
+        SetPlayFoodAnim(true);
+    }
+    
+    public void SetPlayFoodAnim(bool isPlay)
+    {
+        if (foodView == null)
+        {
+            return;
+        }
+        
+        foodView.SetPlayAnim(isPlay);
     }
 }
