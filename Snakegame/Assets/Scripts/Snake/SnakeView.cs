@@ -113,9 +113,6 @@ public class SnakeView : MonoBehaviour
             segment.SetPosition(worldPosition);
 
             SnakeSegmentType segmentType = GetSegmentType(index, positions);
-            Sprite sprite = GetSprite(segmentType);
-            segment.SetSprite(sprite);
-
             UpdateSegmentVisual(segment, segmentType, index, positions, headDirection);
         }
     }
