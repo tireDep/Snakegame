@@ -726,6 +726,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameHUD
   foodCountText: {fileID: 949811521}
   bestCountText: {fileID: 1833511473}
+  soundButtonText: {fileID: 487783642}
 --- !u!1 &440065533
 GameObject:
   m_ObjectHideFlags: 0
@@ -985,7 +986,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: MUTE
+  m_text: mute
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1018,7 +1019,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -2174,8 +2175,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 347.2, y: 0}
-  m_SizeDelta: {x: 87.7429, y: 55}
+  m_AnchoredPosition: {x: 329, y: 0.000011444092}
+  m_SizeDelta: {x: 122.4229, y: 48.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1191273506
 MonoBehaviour:
@@ -2221,9 +2222,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1250502690}
-        m_TargetAssemblyTypeName: ReadyPanel, Assembly-CSharp
-        m_MethodName: OnClickPlay
+      - m_Target: {fileID: 416254223}
+        m_TargetAssemblyTypeName: GameHUD, Assembly-CSharp
+        m_MethodName: ToggleSoundEnable
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

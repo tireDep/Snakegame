@@ -35,42 +35,10 @@ public class BoardCamera : MonoBehaviour
         {
             return;   
         }
-
-        // UpdateViewport();
+        
         UpdateSize();
         UpdatePosition();
     }
-
-    // private void UpdateViewport()
-    // {
-    //     Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
-    //     if (canvas == null)
-    //     {
-    //         Debug.LogError("BoardCamera:: BoardViewport Canvas not found!");
-    //         return;   
-    //     }
-    //     
-    //     RectTransform cavasRectTransform = canvas.transform as RectTransform;
-    //     if (cavasRectTransform == null)
-    //     {
-    //         Debug.LogError("BoardCamera:: BoardViewport RectTransform not found!");
-    //         return;   
-    //     }
-    //     
-    //     Vector3[] corners = new Vector3[4];
-    //     boardViewport.GetWorldCorners(corners);
-    //     
-    //     Camera canvasCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
-    //     Vector2 bottomLeft = RectTransformUtility.WorldToScreenPoint(canvasCamera, corners[0]);
-    //     Vector2 topRight = RectTransformUtility.WorldToScreenPoint(canvasCamera, corners[2]);
-    // 
-    //     float x = bottomLeft.x / Screen.width;
-    //     float y = bottomLeft.y / Screen.height;
-    //     float width = (topRight.x - bottomLeft.x) / Screen.width;
-    //     float height = (topRight.y - bottomLeft.y) / Screen.height;
-    // 
-    //     targetCamera.rect = new Rect(x, y, width, height);
-    // }
 
     // 위치 업데이트
     private void UpdatePosition()
