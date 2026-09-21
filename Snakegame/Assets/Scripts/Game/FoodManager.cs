@@ -7,6 +7,7 @@ public class FoodManager : MonoBehaviour
 {
     BoardManager boardManager;
     private SnakeController snakeController;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
 
     [Header("Prefabs")] 
     [SerializeField] private Food foodPrefabs;
@@ -19,38 +20,57 @@ public class FoodManager : MonoBehaviour
     private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
-        if (boardManager == null)
-        {
-            Debug.LogError("FoodManager:: BoardManager not found!");
-            return;   
-        }
-        
         snakeController = FindAnyObjectByType<SnakeController>();
-        if (snakeController == null)
-        {
-            Debug.LogError("FoodManager:: SnakeController not found!");
-            return;
-        }
+
+        isInitialized = ValidateReferences();
     }
 
-    private void CreateFood()
+    // 음식 관리에 필요한 참조와 프리팹을 검증하는 함수
+    private bool ValidateReferences()
     {
-        if(foodPrefabs == null)
+        if (boardManager == null)
         {
-            Debug.LogError("FoodManager:: FoodPrefab not found!");
-            return;
+            Debug.LogError("FoodManager::ValidateReferences BoardManager is required.", this);
+            return false;
+        }
+
+        if (snakeController == null)
+        {
+            Debug.LogError("FoodManager::ValidateReferences SnakeController is required.", this);
+            return false;
+        }
+
+        if (foodPrefabs == null)
+        {
+            Debug.LogError("FoodManager::ValidateReferences FoodPrefab is required.", this);
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CreateFood()
+    {
+        if (!isInitialized)
+        {
+            return false;
         }
         
         foodView = Instantiate(foodPrefabs, transform);
+        if (foodView == null || !foodView.IsInitialized)
+        {
+            return false;
+        }
+
         foodView.SetShow(false);
+        return true;
     }
 
     // 아이템 소환
     public bool SpawnFood()
     {
-        if (foodView == null)
+        if (!isInitialized || foodView == null)
         {
-            Debug.LogError("FoodManager::SpawnFood FoodView is null.");
             return false;
         }
 
@@ -119,8 +139,13 @@ public class FoodManager : MonoBehaviour
     }
 
     // 초기화 함수
-    public void Initialize()
+    public bool Initialize()
     {
+        if (!isInitialized)
+        {
+            return false;
+        }
+
         ExistFood = false;
         if (foodView != null)
         {
@@ -128,11 +153,19 @@ public class FoodManager : MonoBehaviour
         }
         else
         {
-            CreateFood();    
+            if (!CreateFood())
+            {
+                return false;
+            }
         }
         
-        SpawnFood();
+        if (!SpawnFood())
+        {
+            return false;
+        }
+
         SetPlayFoodAnim(true);
+        return true;
     }
     
     public void SetPlayFoodAnim(bool isPlay)

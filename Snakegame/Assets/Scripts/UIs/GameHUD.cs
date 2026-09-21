@@ -7,6 +7,7 @@ public class GameHUD : MonoBehaviour
 {
     private GameManager gameManager;
     private AudioManager audioManager;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
     [SerializeField] private TMP_Text bestCountText;    // 최대 개수 텍스트
@@ -15,29 +16,50 @@ public class GameHUD : MonoBehaviour
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
+        audioManager = FindAnyObjectByType<AudioManager>();
+
+        isInitialized = ValidateReferences();
+    }
+
+    // 게임 HUD 표시에 필요한 참조를 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (gameManager == null)
         {
-            Debug.LogError("GameHUD:: GameManager not found!");
-            return;   
+            Debug.LogError("GameHUD::ValidateReferences GameManager is required.", this);
+            return false;
         }
 
         if (foodCountText == null)
         {
-            Debug.LogError("GameHUD:: FoodCountText not found!");
-            return;   
+            Debug.LogError("GameHUD::ValidateReferences FoodCountText is required.", this);
+            return false;
         }
 
-        audioManager = FindAnyObjectByType<AudioManager>();
+        if (bestCountText == null)
+        {
+            Debug.LogError("GameHUD::ValidateReferences BestCountText is required.", this);
+            return false;
+        }
+
+        if (soundButtonText == null)
+        {
+            Debug.LogError("GameHUD::ValidateReferences SoundButtonText is required.", this);
+            return false;
+        }
+
         if (audioManager == null)
         {
-            Debug.LogError("GameHUD:: AudioManager not found!");
-            return;   
+            Debug.LogError("GameHUD::ValidateReferences AudioManager is required.", this);
+            return false;
         }
+
+        return true;
     }
 
     private void Initialize()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -50,7 +72,7 @@ public class GameHUD : MonoBehaviour
     
     private void OnEnable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -64,7 +86,7 @@ public class GameHUD : MonoBehaviour
     
     private void OnDisable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;   
         }
@@ -96,7 +118,7 @@ public class GameHUD : MonoBehaviour
     
     public void ToggleSoundEnable()
     {
-        if (audioManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -107,7 +129,7 @@ public class GameHUD : MonoBehaviour
     
     private void UpdateSoundText()
     {
-        if (audioManager == null || soundButtonText == null)
+        if (!isInitialized)
         {
             return;
         }

@@ -6,6 +6,7 @@ public class BoardManager : MonoBehaviour
 {
     private int width = 0;     // 맵 넓이
     private int height = 0;   // 맵 높이
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
     public int Width => width;
     public int Height => height;
     
@@ -17,14 +18,63 @@ public class BoardManager : MonoBehaviour
     [Header("Tiles")] 
     [SerializeField] private List<TileBase> floorTiles;    // 맵 타일
     [SerializeField] private TileBase wallTile;             // 벽 타일
+
+    private void Awake()
+    {
+        isInitialized = ValidateReferences();
+    }
+
+    // 보드 생성에 필요한 참조와 에셋을 검증하는 함수
+    private bool ValidateReferences()
+    {
+        if (floorTilemap == null)
+        {
+            Debug.LogError("BoardManager::ValidateReferences FloorTilemap is required.", this);
+            return false;
+        }
+
+        if (wallTilemap == null)
+        {
+            Debug.LogError("BoardManager::ValidateReferences WallTilemap is required.", this);
+            return false;
+        }
+
+        if (floorTiles == null || floorTiles.Count == 0)
+        {
+            Debug.LogError("BoardManager::ValidateReferences At least one FloorTile is required.", this);
+            return false;
+        }
+
+        for (int index = 0; index < floorTiles.Count; index++)    // 검증할 바닥 타일 인덱스
+        {
+            if (floorTiles[index] == null)
+            {
+                Debug.LogError($"BoardManager::ValidateReferences FloorTiles[{index}] is required.", this);
+                return false;
+            }
+        }
+
+        if (wallTile == null)
+        {
+            Debug.LogError("BoardManager::ValidateReferences WallTile is required.", this);
+            return false;
+        }
+
+        return true;
+    }
     
     // 타일맵 생성 함수
-    public void GenerateMap(int xSize, int ySize)
+    public bool GenerateMap(int xSize, int ySize)
     {
+        if (!isInitialized)
+        {
+            return false;
+        }
+
         if (xSize <= 0 || ySize <= 0)
         {
-            Debug.LogError("BoardManager::GenerateMap" + "Width: {xSize}, Height: {ySize}");
-            return;
+            Debug.LogError($"BoardManager::GenerateMap Invalid size. Width: {xSize}, Height: {ySize}", this);
+            return false;
         }
         
         width = xSize;
@@ -37,6 +87,8 @@ public class BoardManager : MonoBehaviour
         // 맵 생성
         GenerateFloor(width, height);
         GenerateWall(width, height);
+
+        return true;
     }
 
     // 바닥 생성 함수
@@ -49,16 +101,7 @@ public class BoardManager : MonoBehaviour
                 Vector3Int tilePosition = new Vector3Int(x, y, 0);
 
                 // 현재 좌표 기준으로 바둑판 타일 패턴 처리
-                int tileIndex = 0;  // 맵 타일 인덱스
-                if (floorTiles.Count > 0)
-                {
-                    tileIndex = (x + y) % floorTiles.Count;  // 맵 타일 인덱스
-                }
-                else
-                {
-                    Debug.LogError("GenerateFloor:: No floor tiles in the list!");
-                }
-                
+                int tileIndex = (x + y) % floorTiles.Count;  // 맵 타일 인덱스
                 floorTilemap.SetTile(tilePosition, floorTiles[tileIndex]);
             }
         }

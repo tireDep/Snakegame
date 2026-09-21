@@ -4,6 +4,7 @@ using UnityEngine;
 public class ReadyPanel : MonoBehaviour
 {
     private GameManager gameManager;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private GameObject dimmedPanel;
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
@@ -14,34 +15,48 @@ public class ReadyPanel : MonoBehaviour
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
+        isInitialized = ValidateReferences();
+    }
+
+    // 준비 화면 표시에 필요한 참조를 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (gameManager == null)
         {
-            Debug.LogError("ReadyPanel:: GameManager not found!");
-            return;   
+            Debug.LogError("ReadyPanel::ValidateReferences GameManager is required.", this);
+            return false;
         }
 
         if (dimmedPanel == null)
         {
-            Debug.LogError("ReadyPanel:: DimmedPanel not found!");
-            return;  
+            Debug.LogError("ReadyPanel::ValidateReferences DimmedPanel is required.", this);
+            return false;
         }
 
         if (foodCountText == null)
         {
-            Debug.LogError("ReadyPanel:: FoodCountText not found!");
-            return;   
+            Debug.LogError("ReadyPanel::ValidateReferences FoodCountText is required.", this);
+            return false;
         }
 
         if (bestCountText == null)
         {
-            Debug.LogError("ReadyPanel:: BestCountText not found!");
-            return;  
+            Debug.LogError("ReadyPanel::ValidateReferences BestCountText is required.", this);
+            return false;
         }
+
+        if (boardSizeText == null)
+        {
+            Debug.LogError("ReadyPanel::ValidateReferences BoardSizeText is required.", this);
+            return false;
+        }
+
+        return true;
     }
 
     private void Start()
     {
-        if (gameManager == null)
+        if (!isInitialized)
             return;
 
         OnGameStateChanged(gameManager.GameState);
@@ -66,7 +81,7 @@ public class ReadyPanel : MonoBehaviour
     
     private void OnEnable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -81,7 +96,7 @@ public class ReadyPanel : MonoBehaviour
     
     public void OnDisable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;   
         }
@@ -95,7 +110,7 @@ public class ReadyPanel : MonoBehaviour
     // 시작 버튼 함수
     public void OnClickPlay()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -116,7 +131,7 @@ public class ReadyPanel : MonoBehaviour
     // 맵 변경 앞으로 버튼 함수
     public void OnClickPrev()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -127,7 +142,7 @@ public class ReadyPanel : MonoBehaviour
     // 맵 변경 뒤로 버튼 함수
     public void OnClickNext()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -137,22 +152,26 @@ public class ReadyPanel : MonoBehaviour
 
     private void OnGameStateChanged(GameState newState)
     {
-        bool isReady = newState == GameState.Ready;
-        if (dimmedPanel != null)
+        if (!isInitialized)
         {
-            dimmedPanel.SetActive(isReady);
+            return;
         }
 
-        if (gameManager != null)
-        {
-            UpdateAllCountText();
-        }
+        bool isReady = newState == GameState.Ready;
+        dimmedPanel.SetActive(isReady);
+
+        UpdateAllCountText();
         
         gameObject.SetActive(isReady);
     }
 
     private void UpdateBoardSize(BoardSize boardSize)
     {
+        if (!isInitialized)
+        {
+            return;
+        }
+
         switch (boardSize)
         {
             case BoardSize.Small:

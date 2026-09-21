@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameUI : MonoBehaviour
 {
     private GameManager gameManager;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
 
     [SerializeField] private GameObject topPanel;
     [SerializeField] private GameObject dimmedObject;
@@ -11,15 +12,42 @@ public class GameUI : MonoBehaviour
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
+        isInitialized = ValidateReferences();
+    }
+
+    // 게임 UI 전환에 필요한 참조를 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (gameManager == null)
         {
-            Debug.LogError("GameUI::Awake GameManager not found!");
+            Debug.LogError("GameUI::ValidateReferences GameManager is required.", this);
+            return false;
         }
+
+        if (topPanel == null)
+        {
+            Debug.LogError("GameUI::ValidateReferences TopPanel is required.", this);
+            return false;
+        }
+
+        if (dimmedObject == null)
+        {
+            Debug.LogError("GameUI::ValidateReferences DimmedObject is required.", this);
+            return false;
+        }
+
+        if (readyPanel == null)
+        {
+            Debug.LogError("GameUI::ValidateReferences ReadyPanel is required.", this);
+            return false;
+        }
+
+        return true;
     }
 
     private void OnEnable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;   
         }
@@ -29,7 +57,7 @@ public class GameUI : MonoBehaviour
 
     private void Start()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;   
         }
@@ -39,7 +67,7 @@ public class GameUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (gameManager == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -54,7 +82,7 @@ public class GameUI : MonoBehaviour
 
     private void OnGameStateChanged(GameState newState)
     {
-        if (topPanel == null || dimmedObject == null || readyPanel == null)
+        if (!isInitialized)
         {
             return;  
         }

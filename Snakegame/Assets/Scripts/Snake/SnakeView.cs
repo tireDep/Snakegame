@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 public class SnakeView : MonoBehaviour
 {
     BoardManager boardManager;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private SnakeSegmentView segmentPrefab;
     
@@ -22,11 +23,58 @@ public class SnakeView : MonoBehaviour
     private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
+        isInitialized = ValidateReferences();
+    }
+
+    // 뱀 표시에 필요한 참조와 에셋을 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (boardManager == null)
         {
-            Debug.LogError("SnakeView:: BoardManager not found!");
-            return;   
+            Debug.LogError("SnakeView::ValidateReferences BoardManager is required.", this);
+            return false;
         }
+
+        if (segmentPrefab == null)
+        {
+            Debug.LogError("SnakeView::ValidateReferences SegmentPrefab is required.", this);
+            return false;
+        }
+
+        if (headSprite == null)
+        {
+            Debug.LogError("SnakeView::ValidateReferences HeadSprite is required.", this);
+            return false;
+        }
+
+        if (bodySprite == null)
+        {
+            Debug.LogError("SnakeView::ValidateReferences BodySprite is required.", this);
+            return false;
+        }
+
+        if (bodyCornerSprite == null)
+        {
+            Debug.LogError("SnakeView::ValidateReferences BodyCornerSprite is required.", this);
+            return false;
+        }
+
+        if (tailSprites == null || tailSprites.Length == 0)
+        {
+            Debug.LogError("SnakeView::ValidateReferences At least one TailSprite is required.", this);
+            return false;
+        }
+
+        for (int index = 0; index < tailSprites.Length; index++)    // 검증할 꼬리 스프라이트 인덱스
+        {
+            if (tailSprites[index] == null)
+            {
+                Debug.LogError($"SnakeView::ValidateReferences TailSprites[{index}] is required.", this);
+                return false;
+            }
+        }
+
+        return true;
     }
     
     private void Start()
@@ -34,16 +82,23 @@ public class SnakeView : MonoBehaviour
          Initialize();
     }
 
-    public void Initialize()
+    public bool Initialize()
     {
+        if (!isInitialized)
+        {
+            return false;
+        }
+
         tailSpriteIndex = Random.Range(0, tailSprites.Length);
         SetGameOver(false);
+
+        return true;
     }
 
     // 새로고침
     public void Refresh(IReadOnlyList<Vector2Int> positions, Vector2Int headDirection)
     {
-        if (positions == null || positions.Count == 0)
+        if (!isInitialized || positions == null || positions.Count == 0)
         {
             return;
         }

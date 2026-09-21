@@ -10,6 +10,7 @@ public class SnakeController : MonoBehaviour
     private BoardManager boardManager;
     private GameManager gameManager;
     private AudioManager audioManager;
+    private bool isInitialized;    // 필수 참조 검증 완료 여부
     
     private readonly Snake snake = new Snake();
     public Snake SnakePlayer => snake;
@@ -26,29 +27,51 @@ public class SnakeController : MonoBehaviour
     private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
+        audioManager = FindAnyObjectByType<AudioManager>();
+
+        isInitialized = ValidateReferences();
+    }
+
+    // 뱀 제어에 필요한 참조와 설정을 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (boardManager == null)
         {
-            Debug.LogError("SnakeController:: BoardManager not found!");
-            return;   
+            Debug.LogError("SnakeController::ValidateReferences BoardManager is required.", this);
+            return false;
         }
 
-        gameManager = FindAnyObjectByType<GameManager>();
         if (gameManager == null)
         {
-            Debug.LogError("SnakeController:: GameManager not found!");
-            return;
+            Debug.LogError("SnakeController::ValidateReferences GameManager is required.", this);
+            return false;
         }
-        
-        audioManager = FindAnyObjectByType<AudioManager>();
-        if (audioManager == null)
+
+        if (snakeView == null)
         {
-            Debug.LogError("SnakeController:: AudioManager not found!");
+            Debug.LogError("SnakeController::ValidateReferences SnakeView is required.", this);
+            return false;
         }
+
+        if (startingLength <= 0)
+        {
+            Debug.LogError("SnakeController::ValidateReferences StartingLength must be greater than zero.", this);
+            return false;
+        }
+
+        if (moveInterval <= 0.0f)
+        {
+            Debug.LogError("SnakeController::ValidateReferences MoveInterval must be greater than zero.", this);
+            return false;
+        }
+
+        return true;
     }
 
     private void Update()
     {
-        if (!gameManager.IsPlaying())
+        if (!isInitialized || !gameManager.IsPlaying())
         {
             return;
         }
@@ -56,11 +79,11 @@ public class SnakeController : MonoBehaviour
         UpdateMovement();
     }
 
-    public void Initialize()
+    public bool Initialize()
     {
-        if (boardManager == null)
+        if (!isInitialized)
         {
-            return;
+            return false;
         }
         
         // 리소스 방향이 왼쪽이라서 왼쪽으로 진행
@@ -71,24 +94,27 @@ public class SnakeController : MonoBehaviour
         if (startPosition.x + startingLength > boardManager.Width)
         { 
             Debug.LogError("SankeController:: Initialize:: Invalid length!");
-            return;
+            return false;
         }
         
         snake.Initialize(startPosition, startingLength, currentDirection);
 
-        if (snakeView != null)
+        if (!snakeView.Initialize())
         {
-            snakeView.Initialize();
-            snakeView.Refresh(snake.Positions, currentDirection);
+            return false;
         }
+
+        snakeView.Refresh(snake.Positions, currentDirection);
         
         moveTimer = 0.0f;
         hasQueuedDirection = false;
+
+        return true;
     }
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (gameManager == null || !gameManager.IsPlaying())
+        if (!isInitialized || !gameManager.IsPlaying())
         {
             return;
         }
@@ -172,7 +198,7 @@ public class SnakeController : MonoBehaviour
     // 실제 이동
     private void Move()
     {
-        if (gameManager == null || boardManager == null || snakeView == null)
+        if (!isInitialized)
         {
             return;    
         }

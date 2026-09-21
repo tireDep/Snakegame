@@ -10,34 +10,67 @@ public class BoardCamera : MonoBehaviour
  
     BoardManager boardManager;
     private Camera targetCamera;
+    private RectTransform canvasRectTransform;    // 보드 표시 영역이 속한 Canvas 좌표 영역
+    private bool isInitialized;                   // 필수 참조 검증 완료 여부
 
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
+        boardManager = FindAnyObjectByType<BoardManager>();
+
+        isInitialized = ValidateReferences();
+    }
+
+    // 보드 카메라 갱신에 필요한 참조를 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (targetCamera == null)
         {
-            Debug.LogError("BoardCamera:: Camera not found!");
-            return; 
+            Debug.LogError("BoardCamera::ValidateReferences Camera is required.", this);
+            return false;
         }
-        
-        boardManager = FindAnyObjectByType<BoardManager>();
+
         if (boardManager == null)
         {
-            Debug.LogError("BoardCamera:: BoardManager not found!");
-            return;   
+            Debug.LogError("BoardCamera::ValidateReferences BoardManager is required.", this);
+            return false;
         }
+
+        if (boardViewport == null)
+        {
+            Debug.LogError("BoardCamera::ValidateReferences BoardViewport is required.", this);
+            return false;
+        }
+
+        Canvas canvas = boardViewport.GetComponentInParent<Canvas>();    // 보드 표시 영역이 속한 Canvas
+        if (canvas == null)
+        {
+            Debug.LogError("BoardCamera::ValidateReferences BoardViewport must belong to a Canvas.", this);
+            return false;
+        }
+
+        canvasRectTransform = canvas.transform as RectTransform;
+        if (canvasRectTransform == null)
+        {
+            Debug.LogError("BoardCamera::ValidateReferences Canvas must use a RectTransform.", this);
+            return false;
+        }
+
+        return true;
     }
 
     // 카메라 업데이트
-    public void UpdateCamera()
+    public bool UpdateCamera()
     {
-        if (boardManager == null || targetCamera == null || boardViewport == null)
+        if (!isInitialized)
         {
-            return;   
+            return false;
         }
         
         UpdateSize();
         UpdatePosition();
+
+        return true;
     }
 
     // 위치 업데이트
@@ -54,19 +87,6 @@ public class BoardCamera : MonoBehaviour
 
     private Vector2 GetViewportWorldOffset()
     {
-        Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
-        if (canvas == null)
-        {
-            Debug.LogError("BoardCamera:: BoardViewport Canvas not found!");
-            return Vector2.zero;   
-        }
-        
-        RectTransform canvasRectTransform = canvas.transform as RectTransform;
-        if (canvasRectTransform == null)
-        {
-            return Vector2.zero;
-        }
-        
         Vector3 canvasCenterWorld = canvasRectTransform.TransformPoint(canvasRectTransform.rect.center);    // Canvas 중심
         Vector3 viewportCenterWorld = boardViewport.TransformPoint(boardViewport.rect.center);    // BoardViewport 중심
         
@@ -97,15 +117,10 @@ public class BoardCamera : MonoBehaviour
             return;
         }
 
-        Canvas canvas = boardViewport.GetComponentInParent<Canvas>();
-        RectTransform canvasRect = canvas.transform as RectTransform;
-        if (canvasRect == null)
-            return;
-
         float viewportAspect = viewportRect.width / viewportRect.height;
 
         // BoardViewport가 전체 Canvas에서 차지하는 비율
-        float viewportHeightRatio = viewportRect.height / canvasRect.rect.height;
+        float viewportHeightRatio = viewportRect.height / canvasRectTransform.rect.height;
         float verticalSize = boardHeight * 0.5f;
         float horizontalSize = (boardWidth * 0.5f) / viewportAspect;
         float requiredSize = Mathf.Max(verticalSize, horizontalSize);

@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     private SnakeController snakeController;
     private BoardCamera boardCamera;
     private AudioManager audioManager;  // 사운드 관리자
+    private bool isInitialized;          // 필수 참조 검증 완료 여부
     
     private GameState gameState;
     public GameState GameState => gameState;
@@ -46,40 +47,46 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
+        foodManager = FindAnyObjectByType<FoodManager>();
+        snakeController = FindAnyObjectByType<SnakeController>();
+        boardCamera = FindAnyObjectByType<BoardCamera>();
+        audioManager = FindAnyObjectByType<AudioManager>();
+
+        isInitialized = ValidateReferences();
+        if (isInitialized)
+        {
+            Initialize();
+        }
+    }
+
+    // 게임 시작에 필요한 핵심 컴포넌트를 검증하는 함수
+    private bool ValidateReferences()
+    {
         if (boardManager == null)
         {
-            Debug.LogError("BoardCamera:: BoardManager not found!");
-            return;   
+            Debug.LogError("GameManager::ValidateReferences BoardManager is required.", this);
+            return false;
         }
 
-        foodManager = FindAnyObjectByType<FoodManager>();
         if (foodManager == null)
         {
-            Debug.LogError("BoardCamera:: FoodManager not found!");
-            return;  
+            Debug.LogError("GameManager::ValidateReferences FoodManager is required.", this);
+            return false;
         }
 
-        snakeController = FindAnyObjectByType<SnakeController>();
         if (snakeController == null)
         {
-            Debug.LogError("BoardCamera:: SnakeController not found!");
-            return;
+            Debug.LogError("GameManager::ValidateReferences SnakeController is required.", this);
+            return false;
         }
-        
-        boardCamera = FindAnyObjectByType<BoardCamera>();
+
         if (boardCamera == null)
         {
-            Debug.LogError("BoardCamera:: BoardCamera not found!");
-            return;   
+            Debug.LogError("GameManager::ValidateReferences BoardCamera is required.", this);
+            return false;
         }
 
-        audioManager = FindAnyObjectByType<AudioManager>();
-        if (audioManager == null)
-        {
-            Debug.LogError("GameManager:: AudioManager not found!");
-        }
-
-        Initialize();
+        return true;
     }
 
     private void Initialize()
@@ -90,7 +97,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (boardManager == null || foodManager == null || snakeController == null || boardCamera == null)
+        if (!isInitialized)
         {
             return;
         }
@@ -98,11 +105,25 @@ public class GameManager : MonoBehaviour
         ResetCount();
         
         int boardSize = GetBoardSize();
-        boardManager.GenerateMap(boardSize, boardSize);
-        
-        boardCamera.UpdateCamera();
-        snakeController.Initialize();
-        foodManager.Initialize();
+        if (!boardManager.GenerateMap(boardSize, boardSize))
+        {
+            return;
+        }
+
+        if (!boardCamera.UpdateCamera())
+        {
+            return;
+        }
+
+        if (!snakeController.Initialize())
+        {
+            return;
+        }
+
+        if (!foodManager.Initialize())
+        {
+            return;
+        }
 
         ChangeState(GameState.Playing);
     }

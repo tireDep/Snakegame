@@ -12,11 +12,49 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip clearClip;
 
     private bool soundEnable;
+    private bool isInitialized;    // 필수 오디오 참조 검증 완료 여부
     public bool SoundEnable => soundEnable;
 
     private void Awake()
     {
         soundEnable = GameSaveData.LoadSoundEnabled();
+        isInitialized = ValidateReferences();
+    }
+
+    // 효과음 재생에 필요한 참조와 에셋을 검증하는 함수
+    private bool ValidateReferences()
+    {
+        if (audioSource == null)
+        {
+            Debug.LogError("AudioManager::ValidateReferences AudioSource is required.", this);
+            return false;
+        }
+
+        if (moveClip == null)
+        {
+            Debug.LogError("AudioManager::ValidateReferences MoveClip is required.", this);
+            return false;
+        }
+
+        if (foodClip == null)
+        {
+            Debug.LogError("AudioManager::ValidateReferences FoodClip is required.", this);
+            return false;
+        }
+
+        if (collisionClip == null)
+        {
+            Debug.LogError("AudioManager::ValidateReferences CollisionClip is required.", this);
+            return false;
+        }
+
+        if (clearClip == null)
+        {
+            Debug.LogError("AudioManager::ValidateReferences ClearClip is required.", this);
+            return false;
+        }
+
+        return true;
     }
 
     public void SetSoundEnable(bool isEnable)
@@ -47,12 +85,7 @@ public class AudioManager : MonoBehaviour
 
     private void PlaySfx(AudioClip clip)
     {
-        if (!soundEnable)
-        {
-            return;
-        }
-        
-        if (audioSource == null || clip == null)
+        if (!isInitialized || !soundEnable)
         {
             return;
         }
