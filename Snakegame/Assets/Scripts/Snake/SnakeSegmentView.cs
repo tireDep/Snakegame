@@ -4,13 +4,13 @@ using UnityEngine;
 public class SnakeSegmentView : MonoBehaviour
 {
     private SpriteRenderer spriteRenderer;
-    private bool isInitialized;    // 필수 컴포넌트 검증 완료 여부
+    private bool hasValidReferences;    // 필수 컴포넌트 검증 완료 여부
     public SpriteRenderer SpriteRenderer => spriteRenderer;
     
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 세그먼트 표시에 필요한 컴포넌트를 검증하는 함수
@@ -32,7 +32,7 @@ public class SnakeSegmentView : MonoBehaviour
 
     public void SetSprite(Sprite sprite)
     {
-        if (!isInitialized || sprite == null)
+        if (!hasValidReferences || sprite == null)
         {
             return;   
         }

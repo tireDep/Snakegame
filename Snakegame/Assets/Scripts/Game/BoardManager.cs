@@ -6,7 +6,7 @@ public class BoardManager : MonoBehaviour
 {
     private int width = 0;     // 맵 넓이
     private int height = 0;   // 맵 높이
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     public int Width => width;
     public int Height => height;
     
@@ -21,7 +21,7 @@ public class BoardManager : MonoBehaviour
 
     private void Awake()
     {
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 보드 생성에 필요한 참조와 에셋을 검증하는 함수
@@ -66,7 +66,7 @@ public class BoardManager : MonoBehaviour
     // 타일맵 생성 함수
     public bool GenerateMap(int xSize, int ySize)
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }

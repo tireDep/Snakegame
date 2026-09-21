@@ -3,13 +3,13 @@ using UnityEngine;
 public class Food : MonoBehaviour
 {
     private Animator animator;
-    private bool isInitialized;    // 필수 컴포넌트 검증 완료 여부
-    public bool IsInitialized => isInitialized;    // 음식 표시 준비 완료 여부
+    private bool hasValidReferences;    // 필수 컴포넌트 검증 완료 여부
+    public bool IsInitialized => hasValidReferences;    // 음식 표시 준비 완료 여부
     
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 음식 표시에 필요한 컴포넌트를 검증하는 함수
@@ -42,7 +42,7 @@ public class Food : MonoBehaviour
 
     public void SetPlayAnim(bool isPlay)
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }

@@ -11,14 +11,14 @@ public class BoardCamera : MonoBehaviour
     BoardManager boardManager;
     private Camera targetCamera;
     private RectTransform canvasRectTransform;    // 보드 표시 영역이 속한 Canvas 좌표 영역
-    private bool isInitialized;                   // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;              // 필수 참조 검증 완료 여부
 
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
         boardManager = FindAnyObjectByType<BoardManager>();
 
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 보드 카메라 갱신에 필요한 참조를 검증하는 함수
@@ -62,7 +62,7 @@ public class BoardCamera : MonoBehaviour
     // 카메라 업데이트
     public bool UpdateCamera()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }

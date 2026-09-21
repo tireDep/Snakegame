@@ -10,7 +10,7 @@ public class SnakeController : MonoBehaviour
     private BoardManager boardManager;
     private GameManager gameManager;
     private AudioManager audioManager;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     private readonly Snake snake = new Snake();
     public Snake SnakePlayer => snake;
@@ -30,7 +30,7 @@ public class SnakeController : MonoBehaviour
         gameManager = FindAnyObjectByType<GameManager>();
         audioManager = FindAnyObjectByType<AudioManager>();
 
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 뱀 제어에 필요한 참조와 설정을 검증하는 함수
@@ -71,7 +71,7 @@ public class SnakeController : MonoBehaviour
 
     private void Update()
     {
-        if (!isInitialized || !gameManager.IsPlaying())
+        if (!hasValidReferences || !gameManager.IsPlaying())
         {
             return;
         }
@@ -81,7 +81,7 @@ public class SnakeController : MonoBehaviour
 
     public bool Initialize()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }
@@ -114,7 +114,7 @@ public class SnakeController : MonoBehaviour
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (!isInitialized || !gameManager.IsPlaying())
+        if (!hasValidReferences || !gameManager.IsPlaying())
         {
             return;
         }
@@ -198,7 +198,7 @@ public class SnakeController : MonoBehaviour
     // 실제 이동
     private void Move()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;    
         }

@@ -7,7 +7,7 @@ public class FoodManager : MonoBehaviour
 {
     BoardManager boardManager;
     private SnakeController snakeController;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
 
     [Header("Prefabs")] 
     [SerializeField] private Food foodPrefabs;
@@ -22,7 +22,7 @@ public class FoodManager : MonoBehaviour
         boardManager = FindAnyObjectByType<BoardManager>();
         snakeController = FindAnyObjectByType<SnakeController>();
 
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 음식 관리에 필요한 참조와 프리팹을 검증하는 함수
@@ -51,7 +51,7 @@ public class FoodManager : MonoBehaviour
 
     private bool CreateFood()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }
@@ -69,7 +69,7 @@ public class FoodManager : MonoBehaviour
     // 아이템 소환
     public bool SpawnFood()
     {
-        if (!isInitialized || foodView == null)
+        if (!hasValidReferences || foodView == null || !foodView.IsInitialized)
         {
             return false;
         }
@@ -141,12 +141,17 @@ public class FoodManager : MonoBehaviour
     // 초기화 함수
     public bool Initialize()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }
 
         ExistFood = false;
+        if (foodView != null && !foodView.IsInitialized)
+        {
+            return false;
+        }
+
         if (foodView != null)
         {
             foodView.SetShow(false);

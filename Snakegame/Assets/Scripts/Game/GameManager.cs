@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     private SnakeController snakeController;
     private BoardCamera boardCamera;
     private AudioManager audioManager;  // 사운드 관리자
-    private bool isInitialized;          // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;     // 필수 참조 검증 완료 여부
     
     private GameState gameState;
     public GameState GameState => gameState;
@@ -52,8 +52,8 @@ public class GameManager : MonoBehaviour
         boardCamera = FindAnyObjectByType<BoardCamera>();
         audioManager = FindAnyObjectByType<AudioManager>();
 
-        isInitialized = ValidateReferences();
-        if (isInitialized)
+        hasValidReferences = ValidateReferences();
+        if (hasValidReferences)
         {
             Initialize();
         }
@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }

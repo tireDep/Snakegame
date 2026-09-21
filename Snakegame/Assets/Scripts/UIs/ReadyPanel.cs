@@ -4,7 +4,7 @@ using UnityEngine;
 public class ReadyPanel : MonoBehaviour
 {
     private GameManager gameManager;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private GameObject dimmedPanel;
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
@@ -15,7 +15,7 @@ public class ReadyPanel : MonoBehaviour
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 준비 화면 표시에 필요한 참조를 검증하는 함수
@@ -56,7 +56,7 @@ public class ReadyPanel : MonoBehaviour
 
     private void Start()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
             return;
 
         OnGameStateChanged(gameManager.GameState);
@@ -81,7 +81,7 @@ public class ReadyPanel : MonoBehaviour
     
     private void OnEnable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -96,7 +96,7 @@ public class ReadyPanel : MonoBehaviour
     
     public void OnDisable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;   
         }
@@ -110,7 +110,7 @@ public class ReadyPanel : MonoBehaviour
     // 시작 버튼 함수
     public void OnClickPlay()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -131,7 +131,7 @@ public class ReadyPanel : MonoBehaviour
     // 맵 변경 앞으로 버튼 함수
     public void OnClickPrev()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -142,7 +142,7 @@ public class ReadyPanel : MonoBehaviour
     // 맵 변경 뒤로 버튼 함수
     public void OnClickNext()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -152,7 +152,7 @@ public class ReadyPanel : MonoBehaviour
 
     private void OnGameStateChanged(GameState newState)
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -167,7 +167,7 @@ public class ReadyPanel : MonoBehaviour
 
     private void UpdateBoardSize(BoardSize boardSize)
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }

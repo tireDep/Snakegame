@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class SnakeView : MonoBehaviour
 {
     BoardManager boardManager;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private SnakeSegmentView segmentPrefab;
     
@@ -23,7 +23,7 @@ public class SnakeView : MonoBehaviour
     private void Awake()
     {
         boardManager = FindAnyObjectByType<BoardManager>();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 뱀 표시에 필요한 참조와 에셋을 검증하는 함수
@@ -84,7 +84,7 @@ public class SnakeView : MonoBehaviour
 
     public bool Initialize()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return false;
         }
@@ -98,7 +98,7 @@ public class SnakeView : MonoBehaviour
     // 새로고침
     public void Refresh(IReadOnlyList<Vector2Int> positions, Vector2Int headDirection)
     {
-        if (!isInitialized || positions == null || positions.Count == 0)
+        if (!hasValidReferences || positions == null || positions.Count == 0)
         {
             return;
         }

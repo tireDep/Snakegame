@@ -3,7 +3,7 @@ using UnityEngine;
 public class GameUI : MonoBehaviour
 {
     private GameManager gameManager;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
 
     [SerializeField] private GameObject topPanel;
     [SerializeField] private GameObject dimmedObject;
@@ -12,7 +12,7 @@ public class GameUI : MonoBehaviour
     private void Awake()
     {
         gameManager = FindAnyObjectByType<GameManager>();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 게임 UI 전환에 필요한 참조를 검증하는 함수
@@ -47,7 +47,7 @@ public class GameUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;   
         }
@@ -57,7 +57,7 @@ public class GameUI : MonoBehaviour
 
     private void Start()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;   
         }
@@ -67,7 +67,7 @@ public class GameUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -82,7 +82,7 @@ public class GameUI : MonoBehaviour
 
     private void OnGameStateChanged(GameState newState)
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;  
         }

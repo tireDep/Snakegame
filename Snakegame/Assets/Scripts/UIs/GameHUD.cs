@@ -7,7 +7,7 @@ public class GameHUD : MonoBehaviour
 {
     private GameManager gameManager;
     private AudioManager audioManager;
-    private bool isInitialized;    // 필수 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
     [SerializeField] private TMP_Text bestCountText;    // 최대 개수 텍스트
@@ -18,7 +18,7 @@ public class GameHUD : MonoBehaviour
         gameManager = FindAnyObjectByType<GameManager>();
         audioManager = FindAnyObjectByType<AudioManager>();
 
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 게임 HUD 표시에 필요한 참조를 검증하는 함수
@@ -59,7 +59,7 @@ public class GameHUD : MonoBehaviour
 
     private void Initialize()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -72,7 +72,7 @@ public class GameHUD : MonoBehaviour
     
     private void OnEnable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -86,7 +86,7 @@ public class GameHUD : MonoBehaviour
     
     private void OnDisable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;   
         }
@@ -118,7 +118,7 @@ public class GameHUD : MonoBehaviour
     
     public void ToggleSoundEnable()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }
@@ -129,7 +129,7 @@ public class GameHUD : MonoBehaviour
     
     private void UpdateSoundText()
     {
-        if (!isInitialized)
+        if (!hasValidReferences)
         {
             return;
         }

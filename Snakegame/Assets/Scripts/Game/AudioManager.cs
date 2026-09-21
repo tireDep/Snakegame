@@ -12,13 +12,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip clearClip;
 
     private bool soundEnable;
-    private bool isInitialized;    // 필수 오디오 참조 검증 완료 여부
+    private bool hasValidReferences;    // 필수 오디오 참조 검증 완료 여부
     public bool SoundEnable => soundEnable;
 
     private void Awake()
     {
         soundEnable = GameSaveData.LoadSoundEnabled();
-        isInitialized = ValidateReferences();
+        hasValidReferences = ValidateReferences();
     }
 
     // 효과음 재생에 필요한 참조와 에셋을 검증하는 함수
@@ -85,7 +85,7 @@ public class AudioManager : MonoBehaviour
 
     private void PlaySfx(AudioClip clip)
     {
-        if (!isInitialized || !soundEnable)
+        if (!hasValidReferences || !soundEnable)
         {
             return;
         }
