@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class SnakeView : MonoBehaviour
 {
@@ -18,7 +16,7 @@ public class SnakeView : MonoBehaviour
     
     private readonly List<SnakeSegmentView> segments = new();
     
-    private Int32 tailSpriteIndex = 0;
+    private int tailSpriteIndex = 0;
 
     private void Awake()
     {
@@ -316,49 +314,6 @@ public class SnakeView : MonoBehaviour
         return 0.0f;
     }
 
-    private void UpdateBodyVisual(SnakeSegmentView segment, SnakeSegmentType type, IReadOnlyList<Vector2Int> positions, int index)
-    {
-        if (positions == null || index <= 0 || index >= positions.Count - 1)
-        {
-            Debug.LogError($"Invalid body index. Index: {index}, " + $"Count: {positions?.Count ?? 0}");
-            return;
-        }
-        
-        Vector2Int current = positions[index];
-        Vector2Int frontDirection = positions[index - 1] - current;
-        Vector2Int backDirection = positions[index + 1] - current;
-
-        if (IsStraight(frontDirection, backDirection))
-        {
-            segment.SetSprite(GetSprite(type));
-
-            if (frontDirection.x != 0)
-            {
-                // 좌우 연결 : 가로
-                segment.SetRotation(0.0f);
-            }
-            else
-            {
-                // 상하 연결 : 세로
-                segment.SetRotation(90.0f);
-            }
-
-            return;
-        }
-        
-        // 앞, 뒤 방향이 서로 다른 축이면 코너
-        segment.SetSprite(GetSprite(type));
-        segment.SetRotation(GetCornerRotation(frontDirection, backDirection));
-    }
-
-    private bool IsStraight(Vector2Int frontDirection, Vector2Int backDirection)
-    {
-        bool horizontal = frontDirection.x != 0 && backDirection.x != 0;
-        bool vertical = frontDirection.y != 0 && backDirection.y != 0;
-        
-        return horizontal || vertical;
-    }
-
     private bool IsCorner(Vector2Int frontDirection, Vector2Int backDirection)
     {
         bool frontHorizontal = frontDirection.x != 0;
@@ -420,7 +375,6 @@ public class SnakeView : MonoBehaviour
                 continue;
             }
             
-            // segment.SpriteRenderer.color = setGameOver ? Color.gray : Color.white;
             segment.SpriteRenderer.color = setGameOver ? new Color(1.0f, 100.0f / 255.0f, 110.0f / 255.0f, 1.0f) : Color.white;
         }
     }

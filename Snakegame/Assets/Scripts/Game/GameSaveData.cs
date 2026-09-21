@@ -8,7 +8,7 @@ public class GameSaveData : MonoBehaviour
     
     public static void SaveBestCount( BoardSize boardSize, int bestCount)
     {
-        int prevBestCount = GameSaveData.LoadBestCount(boardSize);
+        int prevBestCount = LoadBestCount(boardSize);
         if (bestCount <= prevBestCount)
         {
             return;
@@ -37,7 +37,7 @@ public class GameSaveData : MonoBehaviour
     
     public static void SaveBoardSize(BoardSize boardSize)
     {
-        BoardSize prevBoardSize = GameSaveData.LoadBoardSize();
+        BoardSize prevBoardSize = LoadBoardSize();
         if (boardSize == prevBoardSize)
         {
             return;

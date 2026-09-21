@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     private int bestCount = 0;  // 최대 카운트
     public int BestCount => bestCount;
     
-    private int[] lastFoodCounts = new int[System.Enum.GetValues(typeof(BoardSize)).Length];   // 직전 맵 별로 획득 개수
+    private int[] lastFoodCounts = new int[Enum.GetValues(typeof(BoardSize)).Length];   // 직전 맵 별로 획득 개수
     public int LastFoodCount => lastFoodCounts[(int)boardSize];
     
     [Header("Board Size")]
@@ -273,7 +273,7 @@ public class GameManager : MonoBehaviour
 
     public void ChangeBoardSize(int selectIndex)
     {
-        int sizeCount = System.Enum.GetValues(typeof(BoardSize)).Length;
+        int sizeCount = Enum.GetValues(typeof(BoardSize)).Length;
         int newSizeIndex = (int)boardSize + selectIndex;
         
         if (newSizeIndex < 0)
