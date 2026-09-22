@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class GameSaveData : MonoBehaviour
+public static class GameSaveData
 {
-    private const string BEST_COUNT_KEY = "BestCount";
-    private const string BOARD_SIZE_KEY = "BoardSize";
-    private const string SOUND_ENABLE_KEY = "SoundEnable";
+    private const string BOARD_SIZE_KEY = "BoardSize";        // 선택한 보드 크기 저장 키
+    private const string SOUND_ENABLE_KEY = "SoundEnable";    // 사운드 설정 저장 키
     
-    public static void SaveBestCount( BoardSize boardSize, int bestCount)
+    public static void SaveBestCount(BoardSize boardSize, int bestCount)
     {
         int prevBestCount = LoadBestCount(boardSize);
         if (bestCount <= prevBestCount)
@@ -28,11 +27,6 @@ public class GameSaveData : MonoBehaviour
     private static string GetBestCountKey(BoardSize boardSize)
     {
         return $"BestCount_{boardSize}";
-    }
-    
-    public static int LoadBestCount()
-    {
-        return PlayerPrefs.GetInt(BEST_COUNT_KEY, 0);
     }
     
     public static void SaveBoardSize(BoardSize boardSize)
@@ -63,6 +57,14 @@ public class GameSaveData : MonoBehaviour
 
     public static void SaveSoundEnable(bool isEnable)
     {
+        bool previousSoundEnabled = LoadSoundEnabled();    // 현재 저장된 사운드 사용 여부
+
+        // 저장된 값과 같으면 불필요한 PlayerPrefs 쓰기를 생략합니다.
+        if (isEnable == previousSoundEnabled)
+        {
+            return;
+        }
+
         PlayerPrefs.SetInt(SOUND_ENABLE_KEY, isEnable? 1 : 0);
         PlayerPrefs.Save();
     }
