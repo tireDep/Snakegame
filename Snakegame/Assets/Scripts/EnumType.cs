@@ -9,9 +9,7 @@ public enum SnakeSegmentType
 public enum GameState
 {
     Ready,
-    Playing,
-    GameOver,
-    Clear
+    Playing
 }
 
 public enum BoardSize
