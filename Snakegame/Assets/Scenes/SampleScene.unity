@@ -4170,10 +4170,10 @@ MonoBehaviour:
   boardCamera: {fileID: 519420034}
   audioManager: {fileID: 70865295}
   boardSize: 0
-  SmallBoardSize: 5
-  MediumBoardSize: 10
-  LargeBoardSize: 15
-  ExtarLargeBoardSize: 25
+  smallBoardSize: 5
+  mediumBoardSize: 10
+  largeBoardSize: 15
+  extraLargeBoardSize: 25
 --- !u!4 &2031925231
 Transform:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,13 +24,17 @@ public class GameManager : MonoBehaviour
     public int LastFoodCount => lastFoodCounts[(int)boardSize];
     
     [Header("Board Size")]
-    [SerializeField] private BoardSize boardSize = BoardSize.Small;
+    [SerializeField] private BoardSize boardSize = BoardSize.Small;    // 현재 선택한 보드 크기
     public BoardSize BoardSize => boardSize;
 
-    [SerializeField] private int SmallBoardSize = 5;
-    [SerializeField] private int MediumBoardSize = 10;
-    [SerializeField] private int LargeBoardSize = 15;
-    [SerializeField] private int ExtarLargeBoardSize = 25;
+    [FormerlySerializedAs("SmallBoardSize")]
+    [SerializeField] private int smallBoardSize = 5;         // 소형 보드 한 변 길이
+    [FormerlySerializedAs("MediumBoardSize")]
+    [SerializeField] private int mediumBoardSize = 10;       // 중형 보드 한 변 길이
+    [FormerlySerializedAs("LargeBoardSize")]
+    [SerializeField] private int largeBoardSize = 15;        // 대형 보드 한 변 길이
+    [FormerlySerializedAs("ExtarLargeBoardSize")]
+    [SerializeField] private int extraLargeBoardSize = 25;   // 초대형 보드 한 변 길이
     
     
     // UI 구독 함수
@@ -98,8 +103,9 @@ public class GameManager : MonoBehaviour
         
         ResetCount();
         
-        int boardSize = GetBoardSize();
-        if (!boardManager.GenerateMap(boardSize, boardSize))
+        boardSize = GetValidBoardSize(boardSize);
+        int boardDimension = GetBoardDimension(boardSize);    // 생성할 정사각형 보드의 한 변 길이
+        if (!boardManager.GenerateMap(boardDimension, boardDimension))
         {
             return;
         }
@@ -267,16 +273,14 @@ public class GameManager : MonoBehaviour
 
     public void ChangeBoardSize(int selectIndex)
     {
+        boardSize = GetValidBoardSize(boardSize);
         int sizeCount = Enum.GetValues(typeof(BoardSize)).Length;
-        int newSizeIndex = (int)boardSize + selectIndex;
-        
+        int newSizeIndex = ((int)boardSize + selectIndex) % sizeCount;    // 순환 후 선택할 보드 크기 인덱스
+
+        // 음수 나머지를 마지막 보드 크기 인덱스로 순환시킵니다.
         if (newSizeIndex < 0)
         {
-            newSizeIndex = sizeCount - 1;
-        }
-        else if (newSizeIndex >= sizeCount)
-        {
-            newSizeIndex = 0;
+            newSizeIndex += sizeCount;
         }
 
         boardSize = (BoardSize)newSizeIndex;
@@ -291,30 +295,45 @@ public class GameManager : MonoBehaviour
         GameSaveData.SaveBoardSize(boardSize);
     }
 
-    private int GetBoardSize()
+    // 보드 크기 설정을 실제 한 변 길이로 변환하는 함수
+    private int GetBoardDimension(BoardSize selectedBoardSize)
     {
-        switch (boardSize)
+        BoardSize validBoardSize = GetValidBoardSize(selectedBoardSize);    // 숫자 크기를 조회할 유효한 보드 크기
+        switch (validBoardSize)
         {
             case BoardSize.Small:
             {
-                return SmallBoardSize;
+                return smallBoardSize;
             }
             case BoardSize.Medium:
             {
-                return MediumBoardSize;
+                return mediumBoardSize;
             }
             case BoardSize.Large:
             {
-                return LargeBoardSize;
+                return largeBoardSize;
             }
             case BoardSize.ExtraLarge:
             {
-                return ExtarLargeBoardSize;
+                return extraLargeBoardSize;
             }
         }
-        
-        Debug.LogError($"GameManager::GetBoardSize Invalid BoardSize: {boardSize}");
-        return SmallBoardSize; 
+
+        return smallBoardSize;
+    }
+
+    // 잘못된 보드 크기를 소형으로 보정하는 함수
+    private BoardSize GetValidBoardSize(BoardSize selectedBoardSize)
+    {
+        if (Enum.IsDefined(typeof(BoardSize), selectedBoardSize))
+        {
+            return selectedBoardSize;
+        }
+
+        Debug.LogError(
+            $"GameManager::GetValidBoardSize Invalid BoardSize: {(int)selectedBoardSize}. Falling back to Small.",
+            this);
+        return BoardSize.Small;
     }
 
     private void LoadGameData()
