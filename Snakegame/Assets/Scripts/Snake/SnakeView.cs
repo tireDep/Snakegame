@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SnakeView : MonoBehaviour
 {
-    BoardManager boardManager;
+    [SerializeField] private BoardManager boardManager;    // 보드 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private SnakeSegmentView segmentPrefab;
@@ -20,7 +20,6 @@ public class SnakeView : MonoBehaviour
 
     private void Awake()
     {
-        boardManager = FindAnyObjectByType<BoardManager>();
         hasValidReferences = ValidateReferences();
     }
 

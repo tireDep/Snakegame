@@ -7,7 +7,7 @@ public class BoardCamera : MonoBehaviour
     [SerializeField] private float boardPadding = 2.0f;                 // 카메라 패딩
     [SerializeField] private Vector2 cameraOffset = Vector2.zero;       // 카메라 오프셋
  
-    BoardManager boardManager;
+    [SerializeField] private BoardManager boardManager;    // 보드 관리자
     private Camera targetCamera;
     private RectTransform canvasRectTransform;    // 보드 표시 영역이 속한 Canvas 좌표 영역
     private bool hasValidReferences;              // 필수 참조 검증 완료 여부
@@ -15,7 +15,6 @@ public class BoardCamera : MonoBehaviour
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
-        boardManager = FindAnyObjectByType<BoardManager>();
 
         hasValidReferences = ValidateReferences();
     }

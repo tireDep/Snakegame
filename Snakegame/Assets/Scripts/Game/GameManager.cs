@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private BoardManager boardManager;
-    private FoodManager foodManager;
-    private SnakeController snakeController;
-    private BoardCamera boardCamera;
-    private AudioManager audioManager;  // 사운드 관리자
+    [SerializeField] private BoardManager boardManager;             // 보드 관리자
+    [SerializeField] private FoodManager foodManager;               // 음식 관리자
+    [SerializeField] private SnakeController snakeController;       // 뱀 제어 컴포넌트
+    [SerializeField] private BoardCamera boardCamera;               // 보드 카메라
+    [SerializeField] private AudioManager audioManager;             // 사운드 관리자
     private bool hasValidReferences;     // 필수 참조 검증 완료 여부
     
     private GameState gameState;
@@ -46,12 +46,6 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        boardManager = FindAnyObjectByType<BoardManager>();
-        foodManager = FindAnyObjectByType<FoodManager>();
-        snakeController = FindAnyObjectByType<SnakeController>();
-        boardCamera = FindAnyObjectByType<BoardCamera>();
-        audioManager = FindAnyObjectByType<AudioManager>();
-
         hasValidReferences = ValidateReferences();
         if (hasValidReferences)
         {

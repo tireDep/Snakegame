@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ReadyPanel : MonoBehaviour
 {
-    private GameManager gameManager;
+    [SerializeField] private GameManager gameManager;    // 게임 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private GameObject dimmedPanel;
@@ -14,7 +14,6 @@ public class ReadyPanel : MonoBehaviour
     
     private void Awake()
     {
-        gameManager = FindAnyObjectByType<GameManager>();
         hasValidReferences = ValidateReferences();
     }
 

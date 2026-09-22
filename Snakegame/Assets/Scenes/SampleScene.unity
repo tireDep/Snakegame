@@ -582,6 +582,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4854b870cb64e744b9d697e21d2902f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FoodManager
+  boardManager: {fileID: 995500455}
+  snakeController: {fileID: 1758939811}
   foodPrefabs: {fileID: 6826973901560178557, guid: 1f717f6e805a52d4db5c3930a5e783b4, type: 3}
 --- !u!4 &349037639
 Transform:
@@ -724,6 +726,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84aa533b3192ff742b6f41ba875fbf7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameHUD
+  gameManager: {fileID: 2031925230}
+  audioManager: {fileID: 70865295}
   foodCountText: {fileID: 949811521}
   bestCountText: {fileID: 1833511473}
   soundButtonText: {fileID: 487783642}
@@ -1219,6 +1223,7 @@ MonoBehaviour:
   boardViewport: {fileID: 372717186}
   boardPadding: 2
   cameraOffset: {x: 0, y: 0}
+  boardManager: {fileID: 995500455}
 --- !u!1 &570132952
 GameObject:
   m_ObjectHideFlags: 0
@@ -1559,6 +1564,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cec99482528bfc940b7af5dc0b20f733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnakeView
+  boardManager: {fileID: 995500455}
   segmentPrefab: {fileID: 8400208399553600077, guid: 35118496249bc644da1406c9dd36c4e1, type: 3}
   headSprite: {fileID: 21300000, guid: 27d7e02a1aa0f4748960583ad9acf793, type: 3}
   bodySprite: {fileID: 21300000, guid: aa911a07db878dd4e959cec415587044, type: 3}
@@ -2403,6 +2409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61489a1ef50fbc74d80c358628f3eb0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReadyPanel
+  gameManager: {fileID: 2031925230}
   dimmedPanel: {fileID: 1750073682}
   foodCountText: {fileID: 911536489}
   bestCountText: {fileID: 1806360357}
@@ -2897,6 +2904,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eda07f774ef44c40966505364a0bd3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameUI
+  gameManager: {fileID: 2031925230}
   topPanel: {fileID: 416254219}
   dimmedObject: {fileID: 1750073682}
   readyPanel: {fileID: 1250502688}
@@ -3155,6 +3163,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SnakeController
   startingLength: 2
+  boardManager: {fileID: 995500455}
+  gameManager: {fileID: 2031925230}
+  audioManager: {fileID: 70865295}
   snakeView: {fileID: 872674078}
   moveInterval: 0.2
 --- !u!114 &1758939812
@@ -4153,6 +4164,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8448267faed8c6419613f6f0e01c1b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  boardManager: {fileID: 995500455}
+  foodManager: {fileID: 349037638}
+  snakeController: {fileID: 1758939811}
+  boardCamera: {fileID: 519420034}
+  audioManager: {fileID: 70865295}
   boardSize: 0
   SmallBoardSize: 5
   MediumBoardSize: 10

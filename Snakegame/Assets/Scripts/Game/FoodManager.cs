@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class FoodManager : MonoBehaviour
 {
-    BoardManager boardManager;
-    private SnakeController snakeController;
+    [SerializeField] private BoardManager boardManager;            // 보드 관리자
+    [SerializeField] private SnakeController snakeController;      // 뱀 제어 컴포넌트
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
 
     [Header("Prefabs")] 
@@ -17,9 +17,6 @@ public class FoodManager : MonoBehaviour
     
     private void Awake()
     {
-        boardManager = FindAnyObjectByType<BoardManager>();
-        snakeController = FindAnyObjectByType<SnakeController>();
-
         hasValidReferences = ValidateReferences();
     }
 

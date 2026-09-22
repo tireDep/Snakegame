@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class GameHUD : MonoBehaviour
 {
-    private GameManager gameManager;
-    private AudioManager audioManager;
+    [SerializeField] private GameManager gameManager;       // 게임 관리자
+    [SerializeField] private AudioManager audioManager;     // 사운드 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     [SerializeField] private TMP_Text foodCountText;    // 아이템 개수 텍스트
@@ -13,9 +13,6 @@ public class GameHUD : MonoBehaviour
     
     private void Awake()
     {
-        gameManager = FindAnyObjectByType<GameManager>();
-        audioManager = FindAnyObjectByType<AudioManager>();
-
         hasValidReferences = ValidateReferences();
     }
 

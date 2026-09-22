@@ -7,9 +7,9 @@ public class SnakeController : MonoBehaviour
 {
     [SerializeField] private int startingLength = 3;    // 초기 길이
     
-    private BoardManager boardManager;
-    private GameManager gameManager;
-    private AudioManager audioManager;
+    [SerializeField] private BoardManager boardManager;        // 보드 관리자
+    [SerializeField] private GameManager gameManager;          // 게임 관리자
+    [SerializeField] private AudioManager audioManager;        // 사운드 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
     private readonly Snake snake = new Snake();
@@ -26,10 +26,6 @@ public class SnakeController : MonoBehaviour
     
     private void Awake()
     {
-        boardManager = FindAnyObjectByType<BoardManager>();
-        gameManager = FindAnyObjectByType<GameManager>();
-        audioManager = FindAnyObjectByType<AudioManager>();
-
         hasValidReferences = ValidateReferences();
     }
 

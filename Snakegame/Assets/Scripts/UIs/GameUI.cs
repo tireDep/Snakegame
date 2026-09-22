@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameUI : MonoBehaviour
 {
-    private GameManager gameManager;
+    [SerializeField] private GameManager gameManager;    // 게임 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
 
     [SerializeField] private GameObject topPanel;
@@ -11,7 +11,6 @@ public class GameUI : MonoBehaviour
 
     private void Awake()
     {
-        gameManager = FindAnyObjectByType<GameManager>();
         hasValidReferences = ValidateReferences();
     }
 
