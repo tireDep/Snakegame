@@ -5,25 +5,26 @@ using UnityEngine.InputSystem;
 
 public class SnakeController : MonoBehaviour
 {
-    [SerializeField] private int startingLength = 3;    // 초기 길이
+    [SerializeField] private int startingLength = 3;    // 뱀 초기 길이
     
     [SerializeField] private BoardManager boardManager;        // 보드 관리자
     [SerializeField] private GameManager gameManager;          // 게임 관리자
     [SerializeField] private AudioManager audioManager;        // 사운드 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
-    private readonly Snake snake = new Snake();
-    public Snake SnakePlayer => snake;
+    private readonly Snake snake = new Snake();    // 제어할 뱀 데이터
+    public Snake SnakePlayer => snake;             // 현재 제어 중인 뱀 데이터
     
-    private Vector2Int currentDirection;
+    private Vector2Int currentDirection;           // 현재 뱀 이동 방향
     
-    [SerializeField] private SnakeView snakeView;
+    [SerializeField] private SnakeView snakeView;                  // 뱀 표시 컴포넌트
     
-    [SerializeField] private float moveInterval = 0.15f;
-    private float moveTimer;
-    private bool hasQueuedDirection;     // 한 Tick 안에서 여러 번 방향이 변경되는 것 방지
-    private Vector2Int nextDirection;   // 다음 이동 시점에 반영
+    [SerializeField] private float moveInterval = 0.15f;           // 뱀 이동 간격
+    private float moveTimer;                                      // 다음 이동까지 누적된 시간
+    private bool hasQueuedDirection;                              // 한 이동 주기 안에서 방향 변경 예약 여부
+    private Vector2Int nextDirection;                             // 다음 이동에 적용할 방향
     
+    // 뱀 제어에 필요한 참조를 준비하는 함수
     private void Awake()
     {
         hasValidReferences = ValidateReferences();
@@ -65,6 +66,7 @@ public class SnakeController : MonoBehaviour
         return true;
     }
 
+    // 게임 진행 중 뱀 이동 시간을 갱신하는 함수
     private void Update()
     {
         if (!hasValidReferences || !gameManager.IsPlaying())
@@ -75,6 +77,7 @@ public class SnakeController : MonoBehaviour
         UpdateMovement();
     }
 
+    // 뱀 데이터와 표시 상태를 시작 위치로 초기화하는 함수
     public bool Initialize()
     {
         if (!hasValidReferences)
@@ -108,6 +111,7 @@ public class SnakeController : MonoBehaviour
         return true;
     }
 
+    // 입력 시스템의 이동 입력을 방향 전환으로 처리하는 함수
     public void OnMove(InputAction.CallbackContext context)
     {
         if (!hasValidReferences || !gameManager.IsPlaying())
@@ -126,7 +130,7 @@ public class SnakeController : MonoBehaviour
         ChangeDirection(newDirection);
     }
 
-    // InputSystem에서 전달받은 vector2를 snake가 사용하는 상하좌우 vector2int로 변환
+    // 입력 벡터를 뱀이 사용하는 상하좌우 방향으로 변환하는 함수
     private Vector2Int ConvertToDirection(Vector2 input)
     {
         if( Math.Abs(input.x) > Math.Abs(input.y) )
@@ -142,7 +146,7 @@ public class SnakeController : MonoBehaviour
         return Vector2Int.zero;
     }
 
-    // 입력 방향 전환
+    // 유효한 입력 방향을 다음 이동 방향으로 예약하는 함수
     private void ChangeDirection(Vector2Int newDirection)
     {
         if (newDirection == Vector2Int.zero)
@@ -175,7 +179,7 @@ public class SnakeController : MonoBehaviour
         audioManager?.PlayMove();
     }
 
-    // 이동 처리 업데이트
+    // 이동 간격에 맞춰 뱀 이동을 실행하는 함수
     private void UpdateMovement()
     {
         moveTimer += Time.deltaTime;
@@ -191,7 +195,7 @@ public class SnakeController : MonoBehaviour
         Move();
     }
 
-    // 실제 이동
+    // 충돌과 성장 여부를 반영해 뱀을 한 칸 이동하는 함수
     private void Move()
     {
         if (!hasValidReferences)
@@ -204,23 +208,19 @@ public class SnakeController : MonoBehaviour
         
         Vector2Int newHeadPosition = snake.HeadPosition + currentDirection;
         
-        // GameManager에서 이동 가능 여부와 성장 여부를 판단
         if (!gameManager.TryProcessSnakeMove(newHeadPosition, out bool willGrow))
         {
             return;
         }
         
-        // 이동
         snake.Move(newHeadPosition, willGrow);
         
-        // 변경된 좌표 기반으로 위치와 회전 갱신
         snakeView.Refresh(snake.Positions, currentDirection);
 
-        // 이동 후 게임 진행 결과 처리
         gameManager.OnSnakeMoved(willGrow);
     }
 
-    // 자기 자신 충돌 체크
+    // 새 머리 위치가 이동 후 남을 몸통과 충돌하는지 확인하는 함수
     public bool CheckBodyCollision(Vector2Int newHeadPosition, bool willGrow)
     {
         IReadOnlyList<Vector2Int> positions = snake.Positions;
@@ -231,8 +231,7 @@ public class SnakeController : MonoBehaviour
 
         int checkCount = positions.Count;
         
-        // 일반 이동에서는 기존 Tail이 이번 틱에서 제거
-        // 따라서 Head가 현재 Tail 위치로 돌아가는 경우는 충돌로 처리하지 않음
+        // 일반 이동에서는 기존 꼬리가 제거되므로 머리가 현재 꼬리 위치로 돌아가도 충돌하지 않습니다.
         if (!willGrow)
         {
             --checkCount;

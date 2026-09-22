@@ -6,18 +6,19 @@ public class SnakeView : MonoBehaviour
     [SerializeField] private BoardManager boardManager;    // 보드 관리자
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
     
-    [SerializeField] private SnakeSegmentView segmentPrefab;
+    [SerializeField] private SnakeSegmentView segmentPrefab;    // 생성할 뱀 세그먼트 프리팹
     
     [Header("Sprites")]
-    [SerializeField] private Sprite headSprite;
-    [SerializeField] private Sprite bodySprite;
-    [SerializeField] private Sprite bodyCornerSprite;
-    [SerializeField] private Sprite[] tailSprites;
+    [SerializeField] private Sprite headSprite;          // 뱀 머리 스프라이트
+    [SerializeField] private Sprite bodySprite;          // 뱀 직선 몸통 스프라이트
+    [SerializeField] private Sprite bodyCornerSprite;    // 뱀 모서리 몸통 스프라이트
+    [SerializeField] private Sprite[] tailSprites;       // 뱀 꼬리 스프라이트 목록
     
-    private readonly List<SnakeSegmentView> segments = new();
+    private readonly List<SnakeSegmentView> segments = new();    // 현재 표시 중인 뱀 세그먼트 목록
     
-    private int tailSpriteIndex = 0;
+    private int tailSpriteIndex = 0;    // 현재 선택한 꼬리 스프라이트 인덱스
 
+    // 뱀 표시에 필요한 참조를 준비하는 함수
     private void Awake()
     {
         hasValidReferences = ValidateReferences();
@@ -74,11 +75,13 @@ public class SnakeView : MonoBehaviour
         return true;
     }
     
+    // 초기 뱀 표시 상태를 준비하는 함수
     private void Start()
     {
          Initialize();
     }
 
+    // 꼬리 스프라이트와 게임 오버 표시를 초기화하는 함수
     public bool Initialize()
     {
         if (!hasValidReferences)
@@ -92,7 +95,7 @@ public class SnakeView : MonoBehaviour
         return true;
     }
 
-    // 새로고침
+    // 뱀 좌표와 진행 방향에 맞춰 모든 세그먼트 표시를 갱신하는 함수
     public void Refresh(IReadOnlyList<Vector2Int> positions, Vector2Int headDirection)
     {
         if (!hasValidReferences || positions == null || positions.Count == 0)
@@ -114,18 +117,16 @@ public class SnakeView : MonoBehaviour
         }
     }
 
-    // 세그먼트 수 동기화
+    // 데이터의 뱀 길이에 맞춰 표시 세그먼트 수를 동기화하는 함수
     private void SyncSegmentCount(int requiredCount)
     {
-        // 부족한 Segment 생성
         while (segments.Count < requiredCount)
         {
             SnakeSegmentView segment = Instantiate(segmentPrefab, transform);
             segments.Add(segment);
         }
 
-        // 남는 Segment 제거
-        // 항상 마지막 요소부터 제거합니다.
+        // 남는 세그먼트는 항상 마지막 요소부터 제거합니다.
         while (segments.Count > requiredCount)
         {
             int lastIndex = segments.Count - 1;
@@ -135,7 +136,7 @@ public class SnakeView : MonoBehaviour
         }
     }
     
-    // 세그먼트 타입 반환
+    // 위치 관계를 바탕으로 세그먼트 종류를 반환하는 함수
     private SnakeSegmentType GetSegmentType(int index, IReadOnlyList<Vector2Int> positions)
     {
         if (positions == null || positions.Count == 0)
@@ -172,7 +173,7 @@ public class SnakeView : MonoBehaviour
         return SnakeSegmentType.Body;
     }
     
-    // 이미지 반환
+    // 세그먼트 종류에 맞는 스프라이트를 반환하는 함수
     private Sprite GetSprite(SnakeSegmentType type)
     {
         switch (type)
@@ -195,7 +196,7 @@ public class SnakeView : MonoBehaviour
         }
     }
     
-    // 회전 계산 업데이트
+    // 세그먼트 종류와 이웃 방향에 맞춰 스프라이트와 회전을 갱신하는 함수
     private void UpdateSegmentVisual(SnakeSegmentView segment, SnakeSegmentType type, int index, IReadOnlyList<Vector2Int> positions, Vector2Int headDirection)
     { 
         if (segment == null)
@@ -271,24 +272,23 @@ public class SnakeView : MonoBehaviour
         segment.SetRotation(rotation);
     }
     
+    // 몸통 세그먼트가 양쪽 이웃을 가질 수 있는 인덱스인지 확인하는 함수
     private bool IsValidBodyIndex(int index, int count)
     {
         return index > 0 && index < count - 1;
     }
 
+    // 잘못된 몸통 세그먼트 인덱스를 기록하는 함수
     private void LogInvalidBodyIndex(int index, int count)
     {
         Debug.LogError($"SnakeView::UpdateSegmentVisual invalid body index. " + $"Index: {index}, Count: {count}");
     }
 
+    // 직선 세그먼트 방향을 스프라이트 회전 각도로 변환하는 함수
     private float GetRotation(Vector2Int direction)
     {
-        // Head/Tail Sprite 기본 연결 방향 : Left(←)
-        // Head : direction은 Snake의 진행 방향
-        // Tail : direction은 Tail에서 앞쪽 Body가 위치한 방향
-        //
-        // 원본 Sprite가 [Head][Body][Tail] 형태로 연결되도록 제작되어 있으므로
-        // Left 방향일 때 회전하지 않은 상태(0도)를 기준으로 사용
+        // 머리는 뱀의 진행 방향, 꼬리는 앞쪽 몸통 방향을 사용합니다.
+        // 원본 스프라이트가 왼쪽 방향일 때 연결되므로 회전하지 않은 상태를 기준으로 사용합니다.
 
         if (direction == Vector2Int.left)
         {
@@ -313,6 +313,7 @@ public class SnakeView : MonoBehaviour
         return 0.0f;
     }
 
+    // 앞뒤 방향이 서로 다른 축인지 확인하는 함수
     private bool IsCorner(Vector2Int frontDirection, Vector2Int backDirection)
     {
         bool frontHorizontal = frontDirection.x != 0;
@@ -321,6 +322,7 @@ public class SnakeView : MonoBehaviour
         return frontHorizontal != backHorizontal;
     }
 
+    // 모서리 세그먼트의 앞뒤 방향을 회전 각도로 변환하는 함수
     private float GetCornerRotation(Vector2Int frontDirection, Vector2Int backDirection)
     {
         bool hasLeft = frontDirection == Vector2Int.left || backDirection == Vector2Int.left;
@@ -328,28 +330,25 @@ public class SnakeView : MonoBehaviour
         bool hasUp = frontDirection == Vector2Int.up || backDirection == Vector2Int.up;
         bool hasDown = frontDirection == Vector2Int.down || backDirection == Vector2Int.down;
         
-        // Corner 원본 기준 : Left + Down = 0도
+        // 모서리 원본은 왼쪽과 아래쪽 연결을 0도로 사용합니다.
         if (hasLeft && hasDown)
         {
             return 0.0f;
         }
 
-        // 원본을 반시계 방향으로 90도 회전
-        // Down + Right
+        // 아래쪽과 오른쪽 연결은 원본을 반시계 방향으로 90도 회전합니다.
         if (hasDown && hasRight)
         {
             return 90.0f;
         }
 
-        // 180도 회전
-        // Right + Up
+        // 오른쪽과 위쪽 연결은 180도 회전합니다.
         if (hasRight && hasUp)
         {
             return 180.0f;
         }
 
-        // 시계 방향 90도 회전
-        // Up + Left
+        // 위쪽과 왼쪽 연결은 시계 방향으로 90도 회전합니다.
         if (hasUp && hasLeft)
         {
             return -90.0f;
@@ -359,7 +358,7 @@ public class SnakeView : MonoBehaviour
         return 0.0f;
     }
 
-    // 게임 오버 시 색상 처리
+    // 게임 오버 여부에 따라 모든 뱀 세그먼트 색상을 설정하는 함수
     public void SetGameOver(bool setGameOver)
     {
         if (segments == null || segments.Count == 0)

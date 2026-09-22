@@ -11,21 +11,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioManager audioManager;             // 사운드 관리자
     private bool hasValidReferences;     // 필수 참조 검증 완료 여부
     
-    private GameState gameState;
-    public GameState GameState => gameState;
+    private GameState gameState;                    // 현재 게임 상태
+    public GameState GameState => gameState;         // 현재 게임 상태
 
-    private int foodCount = 0;  // 아이템 획득 횟수
-    public int FoodCount => foodCount;
+    private int foodCount = 0;                       // 현재 음식 획득 점수
+    public int FoodCount => foodCount;                // 현재 음식 획득 점수
 
-    private int bestCount = 0;  // 최대 카운트
-    public int BestCount => bestCount;
+    private int bestCount = 0;                       // 현재 보드 크기의 최고 점수
+    public int BestCount => bestCount;                // 현재 보드 크기의 최고 점수
     
-    private int[] lastFoodCounts = new int[Enum.GetValues(typeof(BoardSize)).Length];   // 직전 맵 별로 획득 개수
-    public int LastFoodCount => lastFoodCounts[(int)boardSize];
+    private int[] lastFoodCounts = new int[Enum.GetValues(typeof(BoardSize)).Length];   // 보드 크기별 직전 점수
+    public int LastFoodCount => lastFoodCounts[(int)boardSize];                         // 현재 보드 크기의 직전 점수
     
     [Header("Board Size")]
     [SerializeField] private BoardSize boardSize = BoardSize.Small;    // 현재 선택한 보드 크기
-    public BoardSize BoardSize => boardSize;
+    public BoardSize BoardSize => boardSize;                              // 현재 선택한 보드 크기
 
     [FormerlySerializedAs("SmallBoardSize")]
     [SerializeField] private int smallBoardSize = 5;         // 소형 보드 한 변 길이
@@ -37,18 +37,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int extraLargeBoardSize = 25;   // 초대형 보드 한 변 길이
     
     
-    // UI 구독 함수
-    public event Action<int> OnCountChanged;
-    public event Action<int> OnBestCountChanged;
-    public event Action<GameState> OnGameStateChanged;
-    public event Action<BoardSize> OnBoardSizeChanged;
-    public event Action<int> OnLastFoodCountChanged;
+    public event Action<int> OnCountChanged;                 // 현재 점수 변경 이벤트
+    public event Action<int> OnBestCountChanged;             // 최고 점수 변경 이벤트
+    public event Action<GameState> OnGameStateChanged;       // 게임 상태 변경 이벤트
+    public event Action<BoardSize> OnBoardSizeChanged;       // 보드 크기 변경 이벤트
+    public event Action<int> OnLastFoodCountChanged;         // 직전 점수 변경 이벤트
 
+    // 저장된 게임 데이터를 불러오는 함수
     private void Awake()
     {
         LoadGameData();
     }
     
+    // 필수 참조를 검증하고 게임을 초기화하는 함수
     private void Start()
     {
         hasValidReferences = ValidateReferences();
@@ -88,12 +89,14 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    // 게임을 준비 상태와 초기 점수로 설정하는 함수
     private void Initialize()
     {
         ChangeState(GameState.Ready);
         foodCount = 0;
     }
 
+    // 선택한 보드 크기로 새 게임을 시작하는 함수
     public void StartGame()
     {
         if (!hasValidReferences)
@@ -128,6 +131,7 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.Playing);
     }
 
+    // 충돌 종료 결과를 한 번 처리하는 함수
     public void OnGameOver()
     {
         if (gameState != GameState.Playing)
@@ -143,6 +147,7 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.Ready);
     }
 
+    // 보드 클리어 결과를 한 번 처리하는 함수
     public void OnGameClear()
     {
         if (gameState != GameState.Playing)
@@ -160,6 +165,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("count : " + foodCount + " !");
     }
 
+    // 준비 상태에서 게임을 다시 시작하는 함수
     public void RestartGame()
     {
         if (gameState != GameState.Ready)
@@ -170,11 +176,13 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
+    // 게임이 진행 중인지 확인하는 함수
     public bool IsPlaying()
     {
         return gameState == GameState.Playing;
     }
 
+    // 현재 점수를 올리고 최고 점수를 갱신하는 함수
     public void AddFoodCount()
     {
         foodCount++;
@@ -252,6 +260,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 현재 점수를 초기화하고 점수 변경을 알리는 함수
     public void ResetCount()
     {
         foodCount = 0;
@@ -260,6 +269,7 @@ public class GameManager : MonoBehaviour
         OnBestCountChanged?.Invoke(bestCount);
     }
     
+    // 게임 상태를 변경하고 구독자에게 알리는 함수
     public void ChangeState(GameState newState)
     {
         if (gameState == newState)
@@ -271,6 +281,7 @@ public class GameManager : MonoBehaviour
         OnGameStateChanged?.Invoke(gameState);
     }
 
+    // 선택 방향에 따라 보드 크기를 순환 변경하는 함수
     public void ChangeBoardSize(int selectIndex)
     {
         boardSize = GetValidBoardSize(boardSize);
@@ -291,7 +302,6 @@ public class GameManager : MonoBehaviour
         
         OnLastFoodCountChanged?.Invoke(lastFoodCounts[(int)boardSize]);
         
-        // 데이터 저장
         GameSaveData.SaveBoardSize(boardSize);
     }
 
@@ -336,12 +346,14 @@ public class GameManager : MonoBehaviour
         return BoardSize.Small;
     }
 
+    // 저장된 보드 크기와 해당 최고 점수를 불러오는 함수
     private void LoadGameData()
     {
         boardSize = GameSaveData.LoadBoardSize();
         bestCount = GameSaveData.LoadBestCount(boardSize);
     }
 
+    // 현재 최고 점수와 직전 점수를 저장하는 함수
     private void SaveLastPlayRecord()
     {
         GameSaveData.SaveBestCount(boardSize, bestCount);

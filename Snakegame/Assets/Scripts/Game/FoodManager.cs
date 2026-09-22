@@ -8,13 +8,14 @@ public class FoodManager : MonoBehaviour
     private bool hasValidReferences;    // 필수 참조 검증 완료 여부
 
     [Header("Prefabs")] 
-    [SerializeField] private Food foodPrefabs;
-    private Food foodView;
+    [SerializeField] private Food foodPrefabs;    // 생성할 음식 프리팹
+    private Food foodView;                        // 현재 음식 표시 오브젝트
     
     private Vector2Int foodPosition;    // 음식 위치
-    public bool ExistFood { get; private set; }
-    public Vector2Int FoodPosition => foodPosition;
+    public bool ExistFood { get; private set; }       // 보드에 음식이 존재하는지 여부
+    public Vector2Int FoodPosition => foodPosition;    // 현재 음식의 보드 좌표
     
+    // 음식 관리에 필요한 참조를 준비하는 함수
     private void Awake()
     {
         hasValidReferences = ValidateReferences();
@@ -44,6 +45,7 @@ public class FoodManager : MonoBehaviour
         return true;
     }
 
+    // 음식 표시 오브젝트를 생성하고 숨기는 함수
     private bool CreateFood()
     {
         if (!hasValidReferences)
@@ -61,7 +63,7 @@ public class FoodManager : MonoBehaviour
         return true;
     }
 
-    // 아이템 소환
+    // 비어 있는 보드 위치에 음식을 배치하고 표시하는 함수
     public bool SpawnFood()
     {
         if (!hasValidReferences || foodView == null || !foodView.IsInitialized)
@@ -71,7 +73,7 @@ public class FoodManager : MonoBehaviour
 
         List<Vector2Int> emptyPositions = GetEmptyPositions();
 
-        // 더 이상 Food를 생성할 공간이 없음
+        // 더 이상 음식을 생성할 공간이 없으면 표시를 종료합니다.
         if (emptyPositions.Count == 0)
         {
             ExistFood = false;
@@ -90,7 +92,7 @@ public class FoodManager : MonoBehaviour
         return true;
     }
 
-    // 빈 위치 체크 함수
+    // 뱀이 차지하지 않은 보드 위치를 반환하는 함수
     private List<Vector2Int> GetEmptyPositions()
     {
         List<Vector2Int> emptyPositions = new List<Vector2Int>();
@@ -112,13 +114,13 @@ public class FoodManager : MonoBehaviour
         return emptyPositions;
     }
 
-    // 아이템 체크
+    // 지정한 위치에 음식이 있는지 확인하는 함수
     public bool CheckFood(Vector2Int position)
     {
         return ExistFood && foodPosition == position;
     }
 
-    // 아이템 소비
+    // 현재 음식을 소비하고 숨기는 함수
     public void ConsumeFood()
     {
         if (!ExistFood)
@@ -133,7 +135,7 @@ public class FoodManager : MonoBehaviour
         }
     }
 
-    // 초기화 함수
+    // 음식 상태를 초기화하고 첫 음식을 생성하는 함수
     public bool Initialize()
     {
         if (!hasValidReferences)
@@ -168,6 +170,7 @@ public class FoodManager : MonoBehaviour
         return true;
     }
     
+    // 음식 애니메이션의 재생 여부를 설정하는 함수
     public void SetPlayFoodAnim(bool isPlay)
     {
         if (foodView == null)

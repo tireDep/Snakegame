@@ -3,15 +3,16 @@ using UnityEngine;
 public class BoardCamera : MonoBehaviour
 {
     [Header("Camera")]
-    [SerializeField] private RectTransform boardViewport;               // 화면 표시 영역
-    [SerializeField] private float boardPadding = 2.0f;                 // 카메라 패딩
-    [SerializeField] private Vector2 cameraOffset = Vector2.zero;       // 카메라 오프셋
+    [SerializeField] private RectTransform boardViewport;               // 보드 화면 표시 영역
+    [SerializeField] private float boardPadding = 2.0f;                 // 보드 주변 카메라 여백
+    [SerializeField] private Vector2 cameraOffset = Vector2.zero;       // 보드 중심 기준 카메라 오프셋
  
     [SerializeField] private BoardManager boardManager;    // 보드 관리자
-    private Camera targetCamera;
+    private Camera targetCamera;                         // 크기와 위치를 조정할 카메라
     private RectTransform canvasRectTransform;    // 보드 표시 영역이 속한 Canvas 좌표 영역
     private bool hasValidReferences;              // 필수 참조 검증 완료 여부
 
+    // 카메라와 필수 참조를 준비하는 함수
     private void Awake()
     {
         targetCamera = GetComponent<Camera>();
@@ -57,7 +58,7 @@ public class BoardCamera : MonoBehaviour
         return true;
     }
 
-    // 카메라 업데이트
+    // 보드에 맞춰 카메라 크기와 위치를 갱신하는 함수
     public bool UpdateCamera()
     {
         if (!hasValidReferences)
@@ -71,7 +72,7 @@ public class BoardCamera : MonoBehaviour
         return true;
     }
 
-    // 위치 업데이트
+    // 보드가 표시 영역 중앙에 오도록 카메라 위치를 갱신하는 함수
     private void UpdatePosition()
     {
         Vector3 boardCenter = boardManager.GetBoardCenterWorld();
@@ -83,16 +84,17 @@ public class BoardCamera : MonoBehaviour
             transform.position.z);
     }
 
+    // 표시 영역 중심과 Canvas 중심 사이의 월드 오프셋을 계산하는 함수
     private Vector2 GetViewportWorldOffset()
     {
         Vector3 canvasCenterWorld = canvasRectTransform.TransformPoint(canvasRectTransform.rect.center);    // Canvas 중심
         Vector3 viewportCenterWorld = boardViewport.TransformPoint(boardViewport.rect.center);    // BoardViewport 중심
         
-        // UI 좌표 → 화면 좌표
+        // 서로 다른 RectTransform 중심을 같은 화면 좌표계에서 비교합니다.
         Vector2 canvasCenterScreen = RectTransformUtility.WorldToScreenPoint(null, canvasCenterWorld);
         Vector2 viewportCenterScreen = RectTransformUtility.WorldToScreenPoint(null, viewportCenterWorld);
 
-        // 화면 중심에서 BoardViewport 중심까지의 Pixel 차이
+        // Canvas 중심을 기준으로 보드 표시 영역 중심의 화면 오프셋을 계산합니다.
         Vector2 pixelOffset = viewportCenterScreen - canvasCenterScreen;
 
         // 현재 Orthographic Camera의
@@ -103,7 +105,7 @@ public class BoardCamera : MonoBehaviour
         return pixelOffset * worldPerPixel;
     }
     
-    // 크기 업데이트
+    // 보드 전체가 표시 영역에 들어오도록 카메라 크기를 갱신하는 함수
     private void UpdateSize()
     {
         float boardWidth = boardManager.Width + boardPadding;
